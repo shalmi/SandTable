@@ -7,7 +7,7 @@
 #include "Arduino.h"
 #include "Stepper.h"
 
-Stepper fan = Stepper();
+
 
 //Add 54 to num
 // static const uint8_t A0 = 54;
@@ -17,7 +17,6 @@ Stepper fan = Stepper();
 const int innerLimit = 14;
 const int outerLimit = 15;
 const int pushButton = 14;
-
 const int yEnable = 56; //A2
 const int yStepPin = 60; //A6
 const int yDirPin = 61; //A7
@@ -28,14 +27,14 @@ bool currentDirection = outward;
 const bool HIT = true;
 const bool NOT_HIT = false;
 
+Stepper r_stepper = Stepper(yDirPin,yEnable,yStepPin);
+// Stepper theta_stepper = Stepper(yDirPin,yEnable,yStepPin);
+
 void setup() {
-  fan.SETUP();
+  r_stepper.Setup();
 
   Serial.begin(9600);
-  // Sets the two pins as Outputs
-  pinMode(yStepPin,OUTPUT); 
-  pinMode(yDirPin,OUTPUT);
-  pinMode(yEnable,OUTPUT); // Enable
+
 //  pinMode(pushButton, INPUT_PULLUP);
   pinMode(innerLimit, INPUT_PULLUP);
   pinMode(outerLimit, INPUT_PULLUP);

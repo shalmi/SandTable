@@ -4,12 +4,12 @@
 class Stepper
 {
   public:
-    Stepper();
-    void SETUP();
-    void SPEED(int fan_speed);
+    Stepper(int directionPin,int enablePin,int stepPin);
+    void Setup();
+    void SetSpeed(int speed);
     int rotation();
 };
 
-extern Stepper fan;
+// extern Stepper fan;
 
 #endif
