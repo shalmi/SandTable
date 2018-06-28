@@ -6,7 +6,7 @@
 
 #include "Arduino.h"
 #include "Stepper.h"
-
+#include "SimpleTimer.h"
 
 
 //Add 54 to num
@@ -20,35 +20,34 @@ const int pushButton = 14;
 const int yEnable = 56; //A2
 const int yStepPin = 60; //A6
 const int yDirPin = 61; //A7
-const int stepsForRevolution = 3200;
+// const int stepsForRevolution = 3200;
 const bool outward = true;
 const bool inward = false;
 bool currentDirection = outward;
 const bool HIT = true;
 const bool NOT_HIT = false;
 
+SimpleTimer timer;
+
 Stepper r_stepper = Stepper(yDirPin,yEnable,yStepPin);
 // Stepper theta_stepper = Stepper(yDirPin,yEnable,yStepPin);
 
 void setup() {
-  r_stepper.Setup();
 
   Serial.begin(9600);
-
+  timer.setInterval(15000, RepeatTask);
 //  pinMode(pushButton, INPUT_PULLUP);
   pinMode(innerLimit, INPUT_PULLUP);
   pinMode(outerLimit, INPUT_PULLUP);
-  digitalWrite(yEnable,LOW); // Set Enable low
+  r_stepper.Setup();
 }
 
-void OneStep(int pin, int stepperSpeed){
-    stepperSpeed = stepperSpeed*50;
-    digitalWrite(pin,HIGH); 
-    delayMicroseconds(stepperSpeed); 
-    digitalWrite(pin,LOW); 
-    delayMicroseconds(stepperSpeed); 
+// function to be called repeatedly
+void RepeatTask() {
+  Serial.println("15 second timer");        
 }
-void SetDirection(){
+
+void ReverseDirectionOnBump(){
   if(digitalRead(outerLimit) == HIT){
     currentDirection = inward;
   }
@@ -64,7 +63,8 @@ void SetDirection(){
 void loop() {
 
   // //sets a direction and takes a step
+  r_stepper.ChangeDirection(outward);
+  r_stepper.OneStep();
   // SetDirection();//checks limit switches and changes direction if Hit
   // OneStep(yStepPin,1);
-
 }
