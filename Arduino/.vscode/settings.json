@@ -23,6 +23,7 @@
         "rope": "cpp",
         "slist": "cpp",
         "array": "cpp",
-        "hashtable": "cpp"
+        "hashtable": "cpp",
+        "locale": "cpp"
     }
 }

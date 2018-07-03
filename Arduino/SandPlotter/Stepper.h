@@ -4,14 +4,14 @@
 class Stepper
 {
   private:
-  int speed;
-  const int directionPin;
-  const int enablePin;
-  const int stepPin;
-  
+    int speed;
+    int directionPin;
+    int enablePin;
+    int stepPin;
+
   public:
-    Stepper(int directionPin,int enablePin,int stepPin);
-    void Setup();
+    Stepper();
+    void Init(int _directionPin, int _enablePin, int _stepPin);
     void SetSpeed(int _speed);
     void OneStep();
     void ChangeDirection(bool newDirection);

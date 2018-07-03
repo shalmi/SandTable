@@ -6,35 +6,41 @@
 // int enablePin;
 // int stepPin;
 // int speed = 1;
-Stepper::Stepper(int _directionPin,int _enablePin,int _stepPin)
-: directionPin(_directionPin), enablePin(_enablePin), stepPin(_stepPin)
+Stepper::Stepper()
 {
-  speed = 1;
+    speed = 1;
 }
 
-void Stepper::Setup(){
-  // Sets the three pins as Outputs
-  pinMode(stepPin,OUTPUT);
-  pinMode(directionPin,OUTPUT);
-  pinMode(enablePin,OUTPUT);
-  // Set Enable low ...so the Stepper Works 
-  digitalWrite(enablePin,LOW); 
+void Stepper::Init(int _directionPin, int _enablePin, int _stepPin)
+{
+    // Save the pins
+    directionPin = _directionPin;
+    enablePin = _enablePin;
+    stepPin = _stepPin;
+
+    // Sets the three pins as Outputs
+    pinMode(stepPin, OUTPUT);
+    pinMode(directionPin, OUTPUT);
+    pinMode(enablePin, OUTPUT);
+    // Set Enable low ...so the Stepper Works
+    digitalWrite(enablePin, LOW);
 }
 
-void Stepper::OneStep(){
-    int stepperSpeed = speed*50;
-    digitalWrite(stepPin,HIGH); 
-    delayMicroseconds(stepperSpeed); 
-    digitalWrite(stepPin,LOW); 
-    delayMicroseconds(stepperSpeed); 
+void Stepper::OneStep()
+{
+    int stepperSpeed = speed * 50;
+    digitalWrite(stepPin, HIGH);
+    delayMicroseconds(stepperSpeed);
+    digitalWrite(stepPin, LOW);
+    delayMicroseconds(stepperSpeed);
 }
 
-void Stepper::SetSpeed(int _speed){
-  speed = _speed;
+void Stepper::SetSpeed(int _speed)
+{
+    speed = _speed;
 }
 
-void Stepper::ChangeDirection(bool newDirection){
-  digitalWrite(directionPin,newDirection);
+void Stepper::ChangeDirection(bool newDirection)
+{
+    digitalWrite(directionPin, newDirection);
 }
-
-

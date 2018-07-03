@@ -22,27 +22,20 @@ const int yEnable = 56;  //A2
 const int yStepPin = 60; //A6
 const int yDirPin = 61;  //A7
 // const int stepsForRevolution = 3200;
-const bool outward = true;
-const bool inward = false;
-bool currentDirection = outward;
-const bool HIT = true;
-const bool NOT_HIT = false;
 
 int state = STARTUP;
-long stepCounter = 0;
 
 SimpleTimer timer;
 
-RadiusArm radiusArm = RadiusArm(yDirPin, yEnable, yStepPin);
+RadiusArm radiusArm = RadiusArm(yDirPin, yEnable, yStepPin, innerLimit, outerLimit);
 // Stepper theta_stepper = Stepper(yDirPin,yEnable,yStepPin);
 
 void setup()
 {
     Serial.begin(9600);
+    Serial.println("Michaels Sand Table Starting Up");
     timer.setInterval(15000, RepeatTask);
     //  pinMode(pushButton, INPUT_PULLUP);
-    pinMode(innerLimit, INPUT_PULLUP);
-    pinMode(outerLimit, INPUT_PULLUP);
     radiusArm.Setup();
 }
 
@@ -52,56 +45,33 @@ void RepeatTask()
     Serial.println("15 second timer");
 }
 
-bool ReverseDirectionOnBump()
-{
-    bool didBump = false;
-    if ((digitalRead(outerLimit) == HIT) && (currentDirection == outward))
-    {
-        currentDirection = inward;
-        didBump = true;
-    }
-    else if ((digitalRead(innerLimit) == HIT) && (currentDirection == inward))
-    {
-        currentDirection = outward;
-        didBump = true;
-    }
-    digitalWrite(yDirPin, currentDirection); // Enables the motor to move in a particular direction
-    return didBump;
-}
 // void InitialCalibration(){
 
 // }
-
-void Calibrate_R_Axis(){
-    radiusArm.OneStep();
-    stepCounter += 1;
-    if(ReverseDirectionOnBump()){
-        long lastStepCounter = stepCounter; //TODO: Declare this somewhere or keep it idno
-        Serial.println("Steps between switches = "+ String(stepCounter));
-        stepCounter = 0;
-    }
-}
 
 void loop()
 {
     switch (state)
     {
     case STARTUP:
-        radiusArm.OneStep();
-        if(ReverseDirectionOnBump()) { 
-            state = CALIBRATION;
+        if (radiusArm.Startup())
+        {                        //radiusArm has hit a limitSwitch
+            state = CALIBRATION; //move on to calibration
             Serial.println("State Entering `CALIBRATION` Mode...");
-            }
+        }
         break;
 
     case CALIBRATION:
-        Calibrate_R_Axis();
-        
+        radiusArm.Calibrate_R_Axis();
+        break;
+
     default:
         state = 0;
-        Serial.println("Default Catch `state` var in unkown State: "+String(state));
-        while(true){} //stop everything here.
+        Serial.println("Default Catch `state` var in unkown State: " + String(state));
+        while (true)
+        {
+        } //stop everything here.
 
-    }//switch on state
-    
-}//loop
+    } //switch on state
+
+} //loop
