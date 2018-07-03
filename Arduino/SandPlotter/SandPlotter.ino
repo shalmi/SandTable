@@ -14,7 +14,6 @@
 // static const uint8_t A0 = 54;
 
 // defines pins numbers
-//const int pushButton = 14;
 const int innerLimit = 14;
 const int outerLimit = 15;
 const int pushButton = 14;
@@ -55,19 +54,41 @@ void loop()
     {
     case STARTUP:
         if (radiusArm.Startup())
-        {                        //radiusArm has hit a limitSwitch
-            state = CALIBRATION; //move on to calibration
+        {               //radiusArm has hit a limitSwitch
+            state += 1; //move on to calibration
             Serial.println("State Entering `CALIBRATION` Mode...");
         }
         break;
 
     case CALIBRATION:
-        radiusArm.Calibrate_R_Axis();
+        if (radiusArm.Calibrate_R_Axis())
+        {
+            state += 1;
+            radiusArm.DisableMotor();
+        }
         break;
 
+    case USERINPUT:
+        // if there's any serial available, read it:
+        while (Serial.available() > 0)
+        {
+            // look for the next valid integer in the incoming serial stream:
+            int steps = Serial.parseInt();
+
+            // look for the newline. That's the end of your sentence:
+            if (Serial.read() == '\n')
+            {
+                Serial.print("Requested Steps: ");
+                Serial.println(steps);
+                radiusArm.SetDestination((long)steps);
+            }
+        }
+        radiusArm.ArmLoop();
+        break;
     default:
         state = 0;
         Serial.println("Default Catch `state` var in unkown State: " + String(state));
+        radiusArm.DisableMotor();
         while (true)
         {
         } //stop everything here.

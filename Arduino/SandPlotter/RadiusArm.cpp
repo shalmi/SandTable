@@ -7,13 +7,18 @@ const bool NOT_HIT = false;
 const bool outward = true;
 const bool inward = false;
 long stepCounter = 0;
+long fullDistance;
 bool currentDirection = outward;
+long desiredLocation = 0;
+long currentLocation = 0;
+//  int state = 0;
 
 RadiusArm::RadiusArm(int directionPin, int enablePin, int stepPin, int _innerEndStop, int _outerEndStop)
 {
     stepper.Init(directionPin, enablePin, stepPin);
     innerEndStop = _innerEndStop;
     outerEndStop = _outerEndStop;
+    armState = 0;
 }
 
 void RadiusArm::Setup()
@@ -21,11 +26,6 @@ void RadiusArm::Setup()
     //set Limit Switches as Inputs with Pullup Resistors
     pinMode(innerEndStop, INPUT_PULLUP);
     pinMode(outerEndStop, INPUT_PULLUP);
-}
-
-void RadiusArm::ChangeDirection(bool newDirection)
-{
-    stepper.ChangeDirection(newDirection);
 }
 
 bool RadiusArm::ReverseDirectionOnBump()
@@ -46,23 +46,103 @@ bool RadiusArm::ReverseDirectionOnBump()
     return didBump;
 }
 
-void RadiusArm::Calibrate_R_Axis()
+bool RadiusArm::RoomToMove(){
+    if ((digitalRead(outerEndStop) == HIT) && (currentDirection == outward)){
+        Serial.println("There is a wall there :P Stop trying to go there!");
+        return false;
+    }
+    if ((digitalRead(innerEndStop) == HIT) && (currentDirection == inward)){
+        Serial.println("There is a wall there :P Stop trying to go there!");
+        return false;
+    }
+    return true;
+}
+
+void RadiusArm::TakeStep(){
+    
+    if (RoomToMove()) {
+        stepper.OneStep();
+        
+        if (currentDirection) { //if outward
+            currentLocation+=1;
+        }
+        else{
+            currentLocation-=1;
+        }
+        
+    }
+}
+
+bool RadiusArm::Calibrate_R_Axis()
 {
-    stepper.OneStep();
+    TakeStep();
     stepCounter += 1;
     if (ReverseDirectionOnBump())
     {
-        long lastStepCounter = stepCounter; //TODO: Declare this somewhere or keep it idno
+        fullDistance = stepCounter;
         Serial.println("Steps between switches = " + String(stepCounter));
         stepCounter = 0;
+        currentLocation = 0;
+        return true;
     }
+    return false;
 }
 bool RadiusArm::Startup()
 {
-    stepper.OneStep();
+    TakeStep();
     if (ReverseDirectionOnBump())
     {
         return true;
     }
     return false;
+}
+void RadiusArm::DisableMotor(){
+    stepper.DisableMotor();
+}
+void RadiusArm::Live(){
+    stepper.EnableMotor();
+}
+void RadiusArm::SetDestination(long destination){
+    desiredLocation = destination;
+    armState = GO_TO_POINT;
+    stepper.EnableMotor();
+}
+
+void RadiusArm::ChangeDirection(bool desiredDirection){
+    if (currentDirection != desiredDirection){
+        stepper.ChangeDirection(desiredDirection);
+        currentDirection = desiredDirection;
+    }
+}
+bool RadiusArm::MoveTowardsDestination(){
+    if(currentLocation<desiredLocation){
+        ChangeDirection(outward);
+        TakeStep(); // Move Towards Idler
+    }
+    else if (currentLocation>desiredLocation){
+        ChangeDirection(inward);
+        TakeStep(); // Move Towards Motor
+    }
+    else{
+        return true;
+    }
+    return false;
+}
+
+void RadiusArm::ArmLoop(){
+
+    switch (armState)
+    {
+        case IDLE:
+            break;
+        case GO_TO_POINT:
+            if(MoveTowardsDestination()){
+                stepper.DisableMotor();
+                armState = IDLE;
+            }
+            break;
+    
+        default:
+            break;
+    }
 }

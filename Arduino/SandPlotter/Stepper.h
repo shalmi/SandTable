@@ -15,6 +15,8 @@ class Stepper
     void SetSpeed(int _speed);
     void OneStep();
     void ChangeDirection(bool newDirection);
+    void DisableMotor();
+    void EnableMotor();
 };
 
 // extern Stepper fan;

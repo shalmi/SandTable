@@ -23,7 +23,7 @@ void Stepper::Init(int _directionPin, int _enablePin, int _stepPin)
     pinMode(directionPin, OUTPUT);
     pinMode(enablePin, OUTPUT);
     // Set Enable low ...so the Stepper Works
-    digitalWrite(enablePin, LOW);
+    EnableMotor();
 }
 
 void Stepper::OneStep()
@@ -43,4 +43,11 @@ void Stepper::SetSpeed(int _speed)
 void Stepper::ChangeDirection(bool newDirection)
 {
     digitalWrite(directionPin, newDirection);
+}
+void Stepper::DisableMotor(){
+    digitalWrite(enablePin,HIGH);
+}
+
+void Stepper::EnableMotor(){
+    digitalWrite(enablePin,LOW);
 }
