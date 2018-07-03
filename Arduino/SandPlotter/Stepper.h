@@ -3,6 +3,8 @@
 
 class Stepper
 {
+  private:
+  int speed;
   const int directionPin;
   const int enablePin;
   const int stepPin;

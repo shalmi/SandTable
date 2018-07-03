@@ -8,6 +8,7 @@
 #include "Stepper.h"
 #include "SimpleTimer.h"
 #include "Definitions.h"
+#include "RadiusArm.h"
 
 //Add 54 to num
 // static const uint8_t A0 = 54;
@@ -32,7 +33,7 @@ long stepCounter = 0;
 
 SimpleTimer timer;
 
-Stepper r_stepper = Stepper(yDirPin, yEnable, yStepPin);
+RadiusArm radiusArm = RadiusArm(yDirPin, yEnable, yStepPin);
 // Stepper theta_stepper = Stepper(yDirPin,yEnable,yStepPin);
 
 void setup()
@@ -42,7 +43,7 @@ void setup()
     //  pinMode(pushButton, INPUT_PULLUP);
     pinMode(innerLimit, INPUT_PULLUP);
     pinMode(outerLimit, INPUT_PULLUP);
-    r_stepper.Setup();
+    radiusArm.Setup();
 }
 
 // function to be called repeatedly
@@ -72,7 +73,7 @@ bool ReverseDirectionOnBump()
 // }
 
 void Calibrate_R_Axis(){
-    r_stepper.OneStep();
+    radiusArm.OneStep();
     stepCounter += 1;
     if(ReverseDirectionOnBump()){
         long lastStepCounter = stepCounter; //TODO: Declare this somewhere or keep it idno
@@ -86,7 +87,7 @@ void loop()
     switch (state)
     {
     case STARTUP:
-        r_stepper.OneStep();
+        radiusArm.OneStep();
         if(ReverseDirectionOnBump()) { 
             state = CALIBRATION;
             Serial.println("State Entering `CALIBRATION` Mode...");

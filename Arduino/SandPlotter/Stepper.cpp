@@ -5,11 +5,11 @@
 // int directionPin;
 // int enablePin;
 // int stepPin;
-int speed = 1;
+// int speed = 1;
 Stepper::Stepper(int _directionPin,int _enablePin,int _stepPin)
 : directionPin(_directionPin), enablePin(_enablePin), stepPin(_stepPin)
 {
-
+  speed = 1;
 }
 
 void Stepper::Setup(){
