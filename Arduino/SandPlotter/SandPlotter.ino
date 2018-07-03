@@ -27,6 +27,9 @@ bool currentDirection = outward;
 const bool HIT = true;
 const bool NOT_HIT = false;
 
+int state = 0;
+long stepCounter = 0;
+
 SimpleTimer timer;
 
 Stepper r_stepper = Stepper(yDirPin,yEnable,yStepPin);
@@ -48,11 +51,15 @@ void RepeatTask() {
 }
 
 void ReverseDirectionOnBump(){
-  if(digitalRead(outerLimit) == HIT){
+  if((digitalRead(outerLimit) == HIT) && (currentDirection == outward)){
     currentDirection = inward;
+    Serial.println(stepCounter);
+    stepCounter = 0;
   }
-  if(digitalRead(innerLimit) == HIT){
+  if((digitalRead(innerLimit) == HIT) && (currentDirection == inward)){
     currentDirection = outward;
+    Serial.println(stepCounter);
+    stepCounter = 0;
   }
   digitalWrite(yDirPin,currentDirection); // Enables the motor to move in a particular direction
 }
@@ -61,10 +68,13 @@ void ReverseDirectionOnBump(){
 // }
 
 void loop() {
-
+  
   // //sets a direction and takes a step
-  r_stepper.ChangeDirection(outward);
+//  r_stepper.ChangeDirection(outward);
   r_stepper.OneStep();
+  stepCounter+=1;
+  ReverseDirectionOnBump();
+//  Serial.println(stepCounter);
   // SetDirection();//checks limit switches and changes direction if Hit
   // OneStep(yStepPin,1);
 }
