@@ -11,8 +11,8 @@ class RadiusArm
 	#define GO_TO_POINT (1)
 	int speed;
 	int armState;
-	int innerEndStop;
-	int outerEndStop;
+	int innerEndStop; //Both Switches are shorted when the switch is Open
+	int outerEndStop; //and it is an open circuit when the switch is Hit.
 	Stepper stepper;
 	void TakeStep();
 	bool RoomToMove();
@@ -26,6 +26,7 @@ class RadiusArm
 
   public:
 	RadiusArm(int directionPin, int enablePin, int stepPin, int _innerEndStop, int _outerEndStop);
+	RadiusArm(int directionPin, int enablePin, int stepPin, int _innerEndStop, int _outerEndStop, int _chipSelectPin);
 	void Setup();
 	bool Startup();
 	bool ReverseDirectionOnBump();

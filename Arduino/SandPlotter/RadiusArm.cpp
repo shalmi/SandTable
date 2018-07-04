@@ -15,8 +15,15 @@ long currentLocation = 0;
 //It takes roughly 80.36 steps to move 1mm
 
 RadiusArm::RadiusArm(int directionPin, int enablePin, int stepPin, int _innerEndStop, int _outerEndStop)
-{
+{ //For use with normal stepper
     stepper.Init(directionPin, enablePin, stepPin);
+    innerEndStop = _innerEndStop;
+    outerEndStop = _outerEndStop;
+    armState = 0;
+}
+RadiusArm::RadiusArm(int directionPin, int enablePin, int stepPin, int _innerEndStop, int _outerEndStop, int _chipSelectPin)
+{ // For use with TMC2130
+    stepper.Init(directionPin, enablePin, stepPin, _chipSelectPin);
     innerEndStop = _innerEndStop;
     outerEndStop = _outerEndStop;
     armState = 0;

@@ -12,6 +12,7 @@ class Stepper
   public:
     Stepper();
     void Init(int _directionPin, int _enablePin, int _stepPin);
+    void Init(int _directionPin, int _enablePin, int _stepPin, int _chipSelectPin);
     void SetSpeed(int _speed);
     void OneStep();
     void ChangeDirection(bool newDirection);

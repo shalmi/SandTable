@@ -20,14 +20,20 @@ const int pushButton = 14;
 const int yEnable = 56;  //A2
 const int yStepPin = 60; //A6
 const int yDirPin = 61;  //A7
+const int yCsPin = 62; //A8
 // const int stepsForRevolution = 3200;
 
 int state = STARTUP;
 
 SimpleTimer timer;
 
-RadiusArm radiusArm = RadiusArm(yDirPin, yEnable, yStepPin, innerLimit, outerLimit);
+RadiusArm radiusArm = RadiusArm(yDirPin, yEnable, yStepPin, innerLimit, outerLimit); //Works for Normal Driver
+// RadiusArm radiusArm = RadiusArm(yDirPin, yEnable, yStepPin, innerLimit, outerLimit, yCsPin); //For TMC2130
+
 // Stepper theta_stepper = Stepper(yDirPin,yEnable,yStepPin);
+
+// #include <TMC2130Stepper.h>
+// TMC2130Stepper TMC2130 = TMC2130Stepper(yEnable, yDirPin, yStepPin, yCsPin);
 
 void setup()
 {
@@ -35,6 +41,14 @@ void setup()
     Serial.println("Michaels Sand Table Starting Up");
     timer.setInterval(15000, RepeatTask);
     //  pinMode(pushButton, INPUT_PULLUP);
+
+    //TMC2130
+    // TMC2130.begin(); // Initiate pins and registeries
+    // TMC2130.SilentStepStick2130(600); // Set stepper current to 600mA
+    // TMC2130.stealthChop(1); // Enable extremely quiet stepping
+    // TMC2130.shaft_dir(0);
+    //TMC2130
+
     radiusArm.Setup();
 }
 
