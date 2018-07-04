@@ -12,6 +12,7 @@ bool currentDirection = outward;
 long desiredLocation = 0;
 long currentLocation = 0;
 //  int state = 0;
+//It takes roughly 80.36 steps to move 1mm
 
 RadiusArm::RadiusArm(int directionPin, int enablePin, int stepPin, int _innerEndStop, int _outerEndStop)
 {
