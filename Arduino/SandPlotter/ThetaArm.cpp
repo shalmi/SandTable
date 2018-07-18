@@ -2,6 +2,7 @@
 #include "ThetaArm.h"
 #include "Stepper.h"
 
+
 ThetaArm::ThetaArm(int directionPin, int enablePin, int stepPin, int _hallPin)
 { //For use with normal stepper
     stepper.Init(directionPin, enablePin, stepPin);
@@ -11,12 +12,12 @@ ThetaArm::ThetaArm(int directionPin, int enablePin, int stepPin, int _hallPin)
 /// <summary> .... </summary>
 /// <param name="bar"> .... </param>
 /// <returns> .... </returns>
-void RadiusArm::Setup()
+void ThetaArm::Setup()
 {
     // Is there any setup to do
 }
 
-void RadiusArm::TakeStep(){
+void ThetaArm::TakeStep(){
     
     if (RoomToMove()) {
         stepper.OneStep();
@@ -31,7 +32,25 @@ void RadiusArm::TakeStep(){
     }
 }
 
-bool RadiusArm::Calibrate_Theta_Axis()
+bool ThetaArm::ReverseDirectionOnBump() //rewrite to work with hall effect sensor
+{
+    bool didBump = false;
+    if ((digitalRead(hallPin) == HIT) && (currentDirection == counterClockWise))
+    {
+        currentDirection = clockWise;
+        didBump = true;
+    }
+    else if ((digitalRead(hallPin) == HIT) && (currentDirection == clockWise))
+    {
+        currentDirection = counterClockWise;
+        didBump = true;
+    }
+    // digitalWrite(yDirPin, currentDirection); // Enables the motor to move in a particular direction
+    stepper.ChangeDirection(currentDirection); // Enables the motor to move in a particular direction
+    return didBump;
+}
+
+bool ThetaArm::Calibrate_Theta_Axis()
 {
     TakeStep();
     stepCounter += 1;
@@ -45,7 +64,7 @@ bool RadiusArm::Calibrate_Theta_Axis()
     }
     return false;
 }
-bool RadiusArm::Startup()
+bool ThetaArm::Startup()
 {
     TakeStep();
     if (ReverseDirectionOnBump())
@@ -54,31 +73,31 @@ bool RadiusArm::Startup()
     }
     return false;
 }
-void RadiusArm::DisableMotor(){
+void ThetaArm::DisableMotor(){
     stepper.DisableMotor();
 }
-void RadiusArm::EnableMotor(){
+void ThetaArm::EnableMotor(){
     stepper.EnableMotor();
 }
-void RadiusArm::SetDestination(long destination){
+void ThetaArm::SetDestination(long destination){
     desiredLocation = destination;
     armState = GO_TO_POINT;
     stepper.EnableMotor();
 }
 
-void RadiusArm::ChangeDirection(bool desiredDirection){
+void ThetaArm::ChangeDirection(bool desiredDirection){
     if (currentDirection != desiredDirection){
         stepper.ChangeDirection(desiredDirection);
         currentDirection = desiredDirection;
     }
 }
-bool RadiusArm::MoveTowardsDestination(){
+bool ThetaArm::MoveTowardsDestination(){ //This is not a good function and needs to fix issues with the fact that 361 = 1 etc
     if(currentLocation<desiredLocation){
-        ChangeDirection(outward);
+        ChangeDirection(counterClockWise);
         TakeStep(); // Move Towards Idler
     }
     else if (currentLocation>desiredLocation){
-        ChangeDirection(inward);
+        ChangeDirection(clockWise);
         TakeStep(); // Move Towards Motor
     }
     else{
@@ -87,7 +106,7 @@ bool RadiusArm::MoveTowardsDestination(){
     return false;
 }
 
-void RadiusArm::ArmLoop(){
+void ThetaArm::ArmLoop(){
 
     switch (armState)
     {

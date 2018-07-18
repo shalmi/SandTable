@@ -20,6 +20,16 @@ class RadiusArm
 	bool MoveTowardsDestination();
 	void ChangeDirection(bool newDirection);
 
+	const bool HIT = true;
+	const bool NOT_HIT = false;
+	const bool outward = true;
+	const bool inward = false;
+	long stepCounter = 0;
+	long fullDistance;
+	bool currentDirection = outward;
+	long desiredLocation = 0;
+	long currentLocation = 0;
+
 	// const int directionPin;
 	// const int enablePin;
 	// const int stepPin;
