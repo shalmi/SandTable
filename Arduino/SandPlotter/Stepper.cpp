@@ -9,16 +9,16 @@
 // int speed = 1;
 Stepper::Stepper()
 {
-    speed = 1;
+    // speed = 1;
 }
 
-void Stepper::Init(int _directionPin, int _enablePin, int _stepPin)
+void Stepper::Init(int _directionPin, int _enablePin, int _stepPin, int _speed)
 {
     // Save the pins
     directionPin = _directionPin;
     enablePin = _enablePin;
     stepPin = _stepPin;
-
+    speed = _speed;
     // Sets the three pins as Outputs
     pinMode(stepPin, OUTPUT);
     pinMode(directionPin, OUTPUT);

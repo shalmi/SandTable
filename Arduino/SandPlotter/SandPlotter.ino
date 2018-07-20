@@ -9,6 +9,7 @@
 #include "SimpleTimer.h"
 #include "Definitions.h"
 #include "RadiusArm.h"
+#include "ThetaArm.h"
 
 //Add 54 to num
 // static const uint8_t A0 = 54;
@@ -17,23 +18,31 @@
 const int innerLimit = 14;
 const int outerLimit = 15;
 const int pushButton = 14;
-const int yEnable = 56;  //A2
-const int yStepPin = 60; //A6
-const int yDirPin = 61;  //A7
-const int yCsPin = 62; //A8
+//RadiusMotorPINS
+const int rEnable = 56;  //A2
+const int rStepPin = 60; //A6
+const int rDirPin = 61;  //A7
+const int rCsPin = 62; //A8
+//ThetaMotorPINS
+const int thetaDirPin = 63;  //A9
+const int thetaStepPin = 64; //A10
+const int thetaEnable = 65;  //A11
+const int thetaHallPin = 66; //THIS IS NOT TRUE....shhhh
+// const int thetaCsPin = 62; //A8
 // const int stepsForRevolution = 3200;
 
 int state = STARTUP;
 
 SimpleTimer timer;
 
-RadiusArm radiusArm = RadiusArm(yDirPin, yEnable, yStepPin, innerLimit, outerLimit); //Works for Normal Driver
-// RadiusArm radiusArm = RadiusArm(yDirPin, yEnable, yStepPin, innerLimit, outerLimit, yCsPin); //For TMC2130
+RadiusArm radiusArm = RadiusArm(rDirPin, rEnable, rStepPin, innerLimit, outerLimit); //Works for Normal Driver
+ThetaArm thetaArm = ThetaArm(thetaDirPin,thetaEnable,thetaStepPin,thetaHallPin);
+// RadiusArm radiusArm = RadiusArm(rDirPin, rEnable, rStepPin, innerLimit, outerLimit, rCsPin); //For TMC2130
 
-// Stepper theta_stepper = Stepper(yDirPin,yEnable,yStepPin);
+// Stepper theta_stepper = Stepper(rDirPin,rEnable,rStepPin);
 
 // #include <TMC2130Stepper.h>
-// TMC2130Stepper TMC2130 = TMC2130Stepper(yEnable, yDirPin, yStepPin, yCsPin);
+// TMC2130Stepper TMC2130 = TMC2130Stepper(rEnable, rDirPin, rStepPin, rCsPin);
 
 void setup()
 {
@@ -50,6 +59,7 @@ void setup()
     //TMC2130
 
     radiusArm.Setup();
+    thetaArm.Setup();
 }
 
 // function to be called repeatedly
@@ -63,9 +73,14 @@ void RepeatTask()
 // }
 
 void loop()
-{
+{   
+    state = 17;
     switch (state)
     {
+    case 17:
+        radiusArm.Startup();
+        thetaArm.Startup();
+        break;
     case STARTUP:
         if (radiusArm.Startup())
         {               //radiusArm has hit a limitSwitch

@@ -5,7 +5,7 @@
 
 ThetaArm::ThetaArm(int directionPin, int enablePin, int stepPin, int _hallPin)
 { //For use with normal stepper
-    stepper.Init(directionPin, enablePin, stepPin);
+    stepper.Init(directionPin, enablePin, stepPin, 8);
     hallPin = _hallPin;
     armState = 0;
 }
@@ -19,7 +19,8 @@ void ThetaArm::Setup()
 
 void ThetaArm::TakeStep(){
     
-    if (RoomToMove()) {
+    // if (RoomToMove()) {
+    if(true){
         stepper.OneStep();
         
         if (currentDirection) { //if outward

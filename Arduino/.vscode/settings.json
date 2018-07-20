@@ -24,6 +24,8 @@
         "slist": "cpp",
         "array": "cpp",
         "hashtable": "cpp",
-        "locale": "cpp"
+        "locale": "cpp",
+        "bitset": "cpp",
+        "chrono": "cpp"
     }
 }

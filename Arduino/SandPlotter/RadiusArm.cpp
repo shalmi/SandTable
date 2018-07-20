@@ -7,7 +7,7 @@
 
 RadiusArm::RadiusArm(int directionPin, int enablePin, int stepPin, int _innerEndStop, int _outerEndStop)
 { //For use with normal stepper
-    stepper.Init(directionPin, enablePin, stepPin);
+    stepper.Init(directionPin, enablePin, stepPin, 1);
     innerEndStop = _innerEndStop;
     outerEndStop = _outerEndStop;
     armState = 0;
