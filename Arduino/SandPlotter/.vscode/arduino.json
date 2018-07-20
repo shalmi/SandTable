@@ -1,6 +1,6 @@
 {
     "board": "arduino:avr:mega",
     "configuration": "cpu=atmega2560",
-    "port": "/dev/cu.usbmodem1461",
+    "port": "/dev/cu.usbmodem1411",
     "sketch": "SandPlotter.ino"
 }

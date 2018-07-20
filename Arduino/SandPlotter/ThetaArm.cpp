@@ -5,7 +5,7 @@
 
 ThetaArm::ThetaArm(int directionPin, int enablePin, int stepPin, int _hallPin)
 { //For use with normal stepper
-    stepper.Init(directionPin, enablePin, stepPin, 8);
+    stepper.Init(directionPin, enablePin, stepPin, 10);
     hallPin = _hallPin;
     armState = 0;
 }
