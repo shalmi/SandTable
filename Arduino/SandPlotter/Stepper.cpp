@@ -65,10 +65,12 @@ bool Stepper::OneStepIfTime()
         {
             digitalWrite(stepPin,LOW);//finish step
             timeAtNextPulse = micros() + (speed*50);//reset timer
+            currentlyMidStep = false;
             return true; //a step was taken and FINISHED
         }
         else{
             digitalWrite(stepPin, HIGH);//take first half of step
+            currentlyMidStep = true;
             timeAtNextPulse = micros() + (speed*50);//reset timer
         }
     }
