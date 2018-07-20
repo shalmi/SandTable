@@ -14,7 +14,7 @@ class RadiusArm
 	int innerEndStop; //Both Switches are shorted when the switch is Open
 	int outerEndStop; //and it is an open circuit when the switch is Hit.
 	Stepper stepper;
-	void TakeStep();
+	bool TakeStep();
 	bool RoomToMove();
 	void Live();
 	bool MoveTowardsDestination();

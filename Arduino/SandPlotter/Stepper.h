@@ -8,6 +8,8 @@ class Stepper
     int directionPin;
     int enablePin;
     int stepPin;
+    unsigned long timeAtNextPulse;
+    bool currentlyMidStep = false;
 
   public:
     Stepper();
@@ -17,6 +19,7 @@ class Stepper
     //Takes a full Step
     //currently goes at 50*speed (higher is slower)
     //speed is microseconds between high and low triggers.
+    bool OneStepIfTime();
     void OneStep();
     void ChangeDirection(bool newDirection);
     void DisableMotor();

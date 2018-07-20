@@ -25,6 +25,7 @@ void Stepper::Init(int _directionPin, int _enablePin, int _stepPin, int _speed)
     pinMode(enablePin, OUTPUT);
     // Set Enable low ...so the Stepper Works
     EnableMotor();
+    timeAtNextPulse = micros() + (speed*50);
 }
 
 //IT DOESNT WORK>>>DONT USE
@@ -51,14 +52,38 @@ void Stepper::Init(int _directionPin, int _enablePin, int _stepPin, int _speed)
 //     EnableMotor();
 // }
 
-void Stepper::OneStep()
+// takes a half step if it is time to half step
+// returns true if a step was taken AND finished, false otherwise
+bool Stepper::OneStepIfTime()
 {
-    int stepperSpeed = speed * 50;
-    digitalWrite(stepPin, HIGH);
-    delayMicroseconds(stepperSpeed);
-    digitalWrite(stepPin, LOW);
-    delayMicroseconds(stepperSpeed);
+    if(timeAtNextPulse<1000){ //just to deal with not missing steps and rollover for micros()
+        delayMicroseconds(1000); //should only happen every 70 hours
+    }
+    if(micros()>timeAtNextPulse)//if( its time to take a step)
+    {
+        if(currentlyMidStep)//if(we are in the middle of a step)
+        {
+            digitalWrite(stepPin,LOW);//finish step
+            timeAtNextPulse = micros() + (speed*50);//reset timer
+            return true; //a step was taken and FINISHED
+        }
+        else{
+            digitalWrite(stepPin, HIGH);//take first half of step
+            timeAtNextPulse = micros() + (speed*50);//reset timer
+        }
+    }
+    return false; //it's not time for a step you fool (maybe half step)
+
 }
+//deprecated to OneStepIfTime
+// void Stepper::OneStep()
+// {
+//     int stepperSpeed = speed * 50;
+//     digitalWrite(stepPin, HIGH);
+//     delayMicroseconds(stepperSpeed);
+//     digitalWrite(stepPin, LOW);
+//     delayMicroseconds(stepperSpeed);
+// }
 
 void Stepper::SetSpeed(int _speed)
 {

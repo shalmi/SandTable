@@ -21,15 +21,15 @@ void ThetaArm::TakeStep(){
     
     // if (RoomToMove()) {
     if(true){
-        stepper.OneStep();
-        
-        if (currentDirection) { //if outward
-            currentLocation+=1;
+        if(stepper.OneStepIfTime())
+        {   
+            if (currentDirection) { //if outward
+                currentLocation+=1;
+            }
+            else{
+                currentLocation-=1;
+            }
         }
-        else{
-            currentLocation-=1;
-        }
-        
     }
 }
 

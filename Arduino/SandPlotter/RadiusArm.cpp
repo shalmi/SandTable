@@ -57,18 +57,18 @@ bool RadiusArm::RoomToMove(){
     return true;
 }
 
-void RadiusArm::TakeStep(){
+bool RadiusArm::TakeStep(){
     
     if (RoomToMove()) {
-        stepper.OneStep();
-        
-        if (currentDirection) { //if outward
-            currentLocation+=1;
+        if(stepper.OneStepIfTime())
+        {
+            if (currentDirection) { //if outward
+                currentLocation+=1;
+            }
+            else{
+                currentLocation-=1;
+            }
         }
-        else{
-            currentLocation-=1;
-        }
-        
     }
 }
 
