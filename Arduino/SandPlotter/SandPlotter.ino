@@ -74,7 +74,7 @@ void RepeatTask()
 
 void loop()
 {   
-    state = 17;
+    // state = 17;
     switch (state)
     {
     case 17:
@@ -82,18 +82,17 @@ void loop()
         thetaArm.Startup();
         break;
     case STARTUP:
-        if (radiusArm.Startup())
-        {               //radiusArm has hit a limitSwitch
+        if (radiusArm.Startup() && thetaArm.Startup() )
+        {               //radiusArm has hit a limitSwitch and thetaArmFound a Sensor
             state += 1; //move on to calibration
             Serial.println("State Entering `CALIBRATION` Mode...");
         }
         break;
 
     case CALIBRATION:
-        if (radiusArm.Calibrate_R_Axis())
+        if ( radiusArm.Calibrate_R_Axis() && thetaArm.Calibrate_Theta_Axis() )//need to check if already calibrated
         {
             state += 1;
-            radiusArm.DisableMotor();
         }
         break;
 
@@ -103,16 +102,20 @@ void loop()
         {
             // look for the next valid integer in the incoming serial stream:
             int steps = Serial.parseInt();
-
+            int secondSteps = Serial.parseInt();
             // look for the newline. That's the end of your sentence:
             if (Serial.read() == '\n')
             {
                 Serial.print("Requested Steps: ");
                 Serial.println(steps);
+                Serial.print("Theta Steps: ");
+                Serial.println(secondSteps);
                 radiusArm.SetDestination((long)steps);
+                thetaArm.SetDestination((long)secondSteps);
             }
         }
         radiusArm.ArmLoop();
+        thetaArm.ArmLoop();
         break;
     default:
         state = 0;

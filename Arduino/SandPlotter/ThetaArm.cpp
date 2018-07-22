@@ -14,7 +14,9 @@ ThetaArm::ThetaArm(int directionPin, int enablePin, int stepPin, int _hallPin)
 /// <returns> .... </returns>
 void ThetaArm::Setup()
 {
+    pinMode(hallPin, INPUT);
     // Is there any setup to do
+
 }
 
 void ThetaArm::TakeStep(){
@@ -53,35 +55,46 @@ bool ThetaArm::ReverseDirectionOnBump() //rewrite to work with hall effect senso
 
 bool ThetaArm::Calibrate_Theta_Axis()
 {
-    TakeStep();
-    stepCounter += 1;
-    if (ReverseDirectionOnBump())
-    {
-        fullDistance = stepCounter;
-        Serial.println("Steps between switches = " + String(stepCounter));
-        stepCounter = 0;
-        currentLocation = 0;
-        return true;
-    }
-    return false;
+    currentLocation = 0;
+    fullDistance = 8200;
+    DisableMotor();
+    return true; //nothing can exist here till hall effect sensor exists
+    // TakeStep();
+    // stepCounter += 1;
+    // if (ReverseDirectionOnBump())
+    // {
+    //     fullDistance = stepCounter;
+    //     Serial.println("Steps between switches = " + String(stepCounter));
+    //     stepCounter = 0;
+    //     currentLocation = 0;
+    //     return true;
+    // }
+    // return false;
 }
 bool ThetaArm::Startup()
 {
-    TakeStep();
-    if (ReverseDirectionOnBump())
-    {
+    if(startupFinished){
         return true;
     }
-    return false;
+    else
+    {
+        TakeStep();
+        if (ReverseDirectionOnBump())
+        {
+            startupFinished = true;
+            return true;
+        }
+        return false;
+    }
 }
 void ThetaArm::DisableMotor(){
-    stepper.DisableMotor();
+    // stepper.DisableMotor();
 }
 void ThetaArm::EnableMotor(){
     stepper.EnableMotor();
 }
 void ThetaArm::SetDestination(long destination){
-    desiredLocation = destination;
+    desiredLocation = (destination*8200)/360;
     armState = GO_TO_POINT;
     stepper.EnableMotor();
 }
@@ -115,7 +128,7 @@ void ThetaArm::ArmLoop(){
             break;
         case GO_TO_POINT:
             if(MoveTowardsDestination()){
-                stepper.DisableMotor();
+                DisableMotor();
                 armState = IDLE;
             }
             break;

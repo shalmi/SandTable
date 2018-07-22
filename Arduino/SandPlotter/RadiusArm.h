@@ -29,7 +29,8 @@ class RadiusArm
 	bool currentDirection = outward;
 	long desiredLocation = 0;
 	long currentLocation = 0;
-
+	bool startupFinished = false;
+	bool calibrationFinished = false;
 	// const int directionPin;
 	// const int enablePin;
 	// const int stepPin;

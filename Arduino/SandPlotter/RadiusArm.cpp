@@ -47,11 +47,11 @@ bool RadiusArm::ReverseDirectionOnBump()
 
 bool RadiusArm::RoomToMove(){
     if ((digitalRead(outerEndStop) == HIT) && (currentDirection == outward)){
-        Serial.println("There is a wall there :P Stop trying to go there!");
+        // Serial.println("There is a wall there :P Stop trying to go there!");
         return false;
     }
     if ((digitalRead(innerEndStop) == HIT) && (currentDirection == inward)){
-        Serial.println("There is a wall there :P Stop trying to go there!");
+        // Serial.println("There is a wall there :P Stop trying to go there!");
         return false;
     }
     return true;
@@ -68,32 +68,52 @@ bool RadiusArm::TakeStep(){
             else{
                 currentLocation-=1;
             }
+            return true;
         }
     }
+    return false;
 }
 
 bool RadiusArm::Calibrate_R_Axis()
 {
-    TakeStep();
-    stepCounter += 1;
-    if (ReverseDirectionOnBump())
+    if(calibrationFinished)
     {
-        fullDistance = stepCounter;
-        Serial.println("Steps between switches = " + String(stepCounter));
-        stepCounter = 0;
-        currentLocation = 0;
         return true;
     }
-    return false;
+    else
+    {
+        if ( TakeStep() )
+        {
+            stepCounter += 1;
+        }
+        
+        if (ReverseDirectionOnBump())
+        {
+            fullDistance = stepCounter;
+            Serial.println("Steps between switches = " + String(stepCounter));
+            stepCounter = 0;
+            currentLocation = 0;
+            DisableMotor();
+            return true;
+        }
+        return false;
+    }
 }
 bool RadiusArm::Startup()
 {
-    TakeStep();
-    if (ReverseDirectionOnBump())
-    {
+    if(startupFinished){
         return true;
     }
-    return false;
+    else
+    {
+        TakeStep();
+        if (ReverseDirectionOnBump())
+        {
+            startupFinished = true;
+            return true;
+        }
+        return false;
+    }
 }
 void RadiusArm::DisableMotor(){
     stepper.DisableMotor();
