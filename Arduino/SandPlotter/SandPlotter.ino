@@ -31,7 +31,7 @@ const int thetaHallPin = 66; //THIS IS NOT TRUE....shhhh
 // const int thetaCsPin = 62; //A8
 // const int stepsForRevolution = 3200;
 
-int state = STARTUP;
+int state = 0;
 
 SimpleTimer timer;
 
@@ -81,6 +81,9 @@ void loop()
         radiusArm.Startup();
         thetaArm.Startup();
         break;
+    case DELAYONBOOT:
+        delay(1000);
+        state++;
     case STARTUP:
         if (radiusArm.Startup() && thetaArm.Startup() )
         {               //radiusArm has hit a limitSwitch and thetaArmFound a Sensor
@@ -93,6 +96,7 @@ void loop()
         if ( radiusArm.Calibrate_R_Axis() && thetaArm.Calibrate_Theta_Axis() )//need to check if already calibrated
         {
             state += 1;
+            Serial.println("State Entering `USERINPUT` Mode...");
         }
         break;
 

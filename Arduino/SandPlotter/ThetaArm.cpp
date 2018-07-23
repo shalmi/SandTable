@@ -20,56 +20,80 @@ void ThetaArm::Setup()
 }
 
 void ThetaArm::TakeStep(){
-    
-    // if (RoomToMove()) {
-    if(true){
-        if(stepper.OneStepIfTime())
-        {   
-            if (currentDirection) { //if outward
-                currentLocation+=1;
-            }
-            else{
-                currentLocation-=1;
-            }
+    if(stepper.OneStepIfTime())
+    {   
+        if (currentDirection) { //if CCW
+            currentLocation+=1;
+        }
+        else{ // CW
+            currentLocation-=1;
         }
     }
 }
-
-bool ThetaArm::ReverseDirectionOnBump() //rewrite to work with hall effect sensor
+bool ThetaArm::OnHallEffect()
 {
-    bool didBump = false;
-    if ((digitalRead(hallPin) == HIT) && (currentDirection == counterClockWise))
+    if (analogRead(hallPin) <= magnetSensedValue)
     {
-        currentDirection = clockWise;
-        didBump = true;
+        return true;
     }
-    else if ((digitalRead(hallPin) == HIT) && (currentDirection == clockWise))
-    {
-        currentDirection = counterClockWise;
-        didBump = true;
-    }
-    // digitalWrite(yDirPin, currentDirection); // Enables the motor to move in a particular direction
-    stepper.ChangeDirection(currentDirection); // Enables the motor to move in a particular direction
-    return didBump;
+    return false;
 }
 
+// find correct sensor value for hall effect and then return true when at a sensor.
+// also sets the 0 location!
+bool ThetaArm::CalibrateHallEffectSensor() //rewrite to work with hall effect sensor
+{
+    int testSamples = 750;
+    if(hallEffectCalibrationCounter<testSamples)
+    {
+        int currentRead = analogRead(hallPin);
+        if ( (currentRead <= 400) && (currentRead != 0))
+        {
+            hallEffectCalibrationCounter++;
+            if(currentRead < magnetSensedValue)
+            {
+                magnetSensedValue = currentRead;
+                // currentLocation=0;
+            }
+        }
+        TakeStep();
+    }//endif
+    else if(hallEffectCalibrationCounter == testSamples)
+    {
+        Serial.print("HallEffect Calibration at: ");
+        Serial.println(magnetSensedValue);
+        hallEffectCalibrationCounter++;
+        magnetSensedValue = magnetSensedValue*1.05;
+    }
+    else{
+        TakeStep();
+        int currentRead = analogRead(hallPin);
+        if (currentRead <= magnetSensedValue)
+        {
+            ChangeDirection(clockWise);
+            currentLocation=0;
+            return true;
+        }
+    }
+
+
+    return false;
+}
+
+// make a 360 and measure the steps 
 bool ThetaArm::Calibrate_Theta_Axis()
 {
-    currentLocation = 0;
-    fullDistance = 8200;
-    DisableMotor();
-    return true; //nothing can exist here till hall effect sensor exists
-    // TakeStep();
-    // stepCounter += 1;
-    // if (ReverseDirectionOnBump())
-    // {
-    //     fullDistance = stepCounter;
-    //     Serial.println("Steps between switches = " + String(stepCounter));
-    //     stepCounter = 0;
-    //     currentLocation = 0;
-    //     return true;
-    // }
-    // return false;
+    // currentLocation = 0;
+    TakeStep();
+    fullDistance++;
+    if ( (abs(currentLocation)>300) && OnHallEffect())
+    {
+        DisableMotor();
+        Serial.print("Full Distance of Steps for Theta: ");
+        Serial.println(fullDistance);
+        return true; //nothing can exist here till hall effect sensor exists
+    }
+    return false;
 }
 bool ThetaArm::Startup()
 {
@@ -78,10 +102,10 @@ bool ThetaArm::Startup()
     }
     else
     {
-        TakeStep();
-        if (ReverseDirectionOnBump())
+        if (CalibrateHallEffectSensor())
         {
             startupFinished = true;
+            Serial.println("ThetaArm Startup Finished");
             return true;
         }
         return false;

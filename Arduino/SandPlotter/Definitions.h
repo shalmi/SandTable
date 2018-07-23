@@ -2,8 +2,9 @@
 #define DEFINITIONS_H
 
 // State Machine Definitions
-#define STARTUP (0)
-#define CALIBRATION (1)
-#define USERINPUT (2)
+#define DELAYONBOOT (0)
+#define STARTUP (1)
+#define CALIBRATION (2)
+#define USERINPUT (3)
 
 #endif

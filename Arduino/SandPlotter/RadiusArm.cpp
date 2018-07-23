@@ -109,6 +109,7 @@ bool RadiusArm::Startup()
         TakeStep();
         if (ReverseDirectionOnBump())
         {
+            Serial.println("RadiusArm Startup Finished");
             startupFinished = true;
             return true;
         }
