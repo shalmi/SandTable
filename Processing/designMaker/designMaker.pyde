@@ -11,27 +11,48 @@ tableRadius = tableDiam/2
 screenSize = tableDiam+50
 centerScreen = screenSize/2
 endProgram = False
+iterations = 45
+state=0
+xys = [(0,0)]
 def setup():
-    size(screenSize, screenSize)
+    size(screenSize*2, screenSize)
     # colorMode(HSB, width, 100, width)
     noStroke()
     background(0)
 
 def draw():
-    global squareSize
-    global rotDeg
-    drawTable()
-    # line (100,100,200,200)
-    # pushMatrix()
-    translate(centerScreen,centerScreen) #Go to Center of Screen
-    drawBrokenSquare(squareSize)
-    # drawBrokenSquare(65)
-    # popMatrix()
-    squareSize+=sizeIncrementBy
-    rotDeg += degIncrementBy
-    time.sleep(.2)
-    while(endProgram):
-        doNothing=7
+    global state
+    if(state==0):
+        drawTable()
+        state+=1
+    elif(state==1):
+        global squareSize
+        global rotDeg
+        global iterations
+        # line (100,100,200,200)
+        # pushMatrix()
+        translate(centerScreen,centerScreen) #Go to Center of Screen
+        drawBrokenSquare(squareSize)
+        # drawBrokenSquare(65)
+        # popMatrix()
+        squareSize+=sizeIncrementBy
+        rotDeg += degIncrementBy
+        # time.sleep(.2)
+        iterations-=1
+        if(iterations==0):
+            state+=1
+            iterations = 0
+            print(xys)
+    elif(state == 2):
+        translate(centerScreen*2,0)
+        drawTable()
+        state+=1
+    elif(state ==3):
+        translate(centerScreen*3,centerScreen)
+        line(xys[iterations][0],xys[iterations][1],xys[iterations+1][0],xys[iterations+1][1])
+        iterations+=1
+        if iterations+1>=len(xys):
+            state+=1
 
 def drawTable():
     stroke(255)
@@ -48,6 +69,7 @@ def drawBrokenSquare(sideLength):
     global lastY
     global endProgram
     cSize = 5
+    outOfBoundsCount=0
     xCoords = (1,1,-1,-1)
     yCoords = (1,-1,-1,1)
     # stroke(255) #lets go white
@@ -58,16 +80,19 @@ def drawBrokenSquare(sideLength):
         newY = yCoords[i]*sideLength
         newX, newY = RotatePoint(newX,newY,rotDeg)
         
-        #if outside circle
-        r = sqrt(newX**2+newY**2)
-        if r > tableRadius:
-            endProgram = True
-            theta = atan(newY/newX)
-            
+        # #if outside circle
+        # r = sqrt(newX**2+newY**2)
+        # if r > tableRadius:
+        #     # endProgram = True
+        #     # theta = atan(newY/newX)
+        #     outOfBoundsCount+=1
+        #     if outOfBoundsCount==4:
+        #         endProgram=True
         
         if i==3:
             newY+=sizeIncrementBy
         line(lastX,lastY,newX,newY)
+        xys.append((newX,newY))
         # ellipse(newX,newY,cSize,cSize) #draw each Point
         lastX = newX
         lastY = newY
