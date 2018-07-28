@@ -84,7 +84,7 @@ bool ThetaArm::CalibrateHallEffectSensor() //rewrite to work with hall effect se
 bool ThetaArm::Calibrate_Theta_Axis()
 {
     // currentLocation = 0;
-    TakeStep();
+    TakeStep(); // this needs to return a bool...also wtf
     fullDistance++;
     if ( (abs(currentLocation)>300) && OnHallEffect())
     {

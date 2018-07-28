@@ -25,7 +25,7 @@ def setup():
     background(0)
     
     global test
-    test = importGcode("starTest.gcode")
+    test = importGcode("test.gcode") #starTest.gcode #simpleSquareThing
 
 def draw():
     global state
@@ -63,6 +63,7 @@ def draw():
         # if iterations+1>=len(xys):
         if iterations+1>=len(test):
             state+=1
+        time.sleep(1)
 
 def importGcode(fileName):
     f = open(fileName, 'r')
