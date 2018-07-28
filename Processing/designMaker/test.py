@@ -1,6 +1,6 @@
 from circleLineIntersectionTest import *
 
-f = open('simpleSquareThing.gcode', 'r')
+f = open('simpleSquareThing.gcode', 'r') #simpleSquareThing
 pointList = []
 for line in f:
     parts = line.split()
@@ -18,12 +18,13 @@ newList = []
 nextPoint = 0
 currentlyFixingPoints = False
 lastOutsidePoint = 0
-lastPoint = 0
+lastInsidePoint = 0
 for point in pointList:
     nextPoint+=1
     if currentlyFixingPoints:
         currentlyFixingPoints = False
         newList.append(("G0","G0"))
+        # reEntryPoint = findIntersections(lastOutsidePoint,lastOutsidePoint,circleCenter,circleRadius)
         replacementPoint = findIntersections(point,lastOutsidePoint,circleCenter,circleRadius)
         newList.append(replacementPoint)
         newList.append(point)
@@ -31,12 +32,19 @@ for point in pointList:
     else:
         if isPointInCircle(circleCenter,point,circleRadius):
             newList.append(point)
-            lastPoint = point
+            lastInsidePoint = point
         else: #currently assuming two points cant be out of circle in a row
             lastOutsidePoint = point
-            replacementPoint = findIntersections(point,lastPoint,circleCenter,circleRadius)
+            #exiting point
+            replacementPoint = findIntersections(point,lastInsidePoint,circleCenter,circleRadius)
             newList.append(replacementPoint)
-            currentlyFixingPoints = True
+            # currentlyFixingPoints = True #KILLS THIS
+            # now need to make a reentryPoint
+            #assumes there is a next point and a previous point
+            newList.append(("G0","G0"))
+            replacementPoint = findIntersections(point,pointList[nextPoint],circleCenter,circleRadius)
+            newList.append(replacementPoint)
+
 print(pointList)
 print(newList)
 for point in newList:
