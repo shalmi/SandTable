@@ -25,7 +25,7 @@ def setup():
     background(0)
     
     global test
-    test = importGcode("simpleSquareThing.gcode") #starTest.gcode #simpleSquareThing
+    test = importGcode("test.gcode") #starTest.gcode #simpleSquareThing
 
 def draw():
     global state
