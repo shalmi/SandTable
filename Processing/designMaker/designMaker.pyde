@@ -25,7 +25,7 @@ def setup():
     background(0)
     
     global test
-    test = importGcode("test.gcode") #starTest.gcode #simpleSquareThing
+    test = importGcode("test2.gcode") #starTest.gcode #simpleSquareThing
 
 def draw():
     global state
@@ -55,15 +55,21 @@ def draw():
         drawTable()
         state+=1
     elif(state ==3):
-        translate(centerScreen*2+25,25)
-        # translate(centerScreen*3,centerScreen)
-        # line(xys[iterations][0],xys[iterations][1],xys[iterations+1][0],xys[iterations+1][1])
-        line(test[iterations][0],test[iterations][1],test[iterations+1][0],test[iterations+1][1])
-        iterations+=1
-        # if iterations+1>=len(xys):
+        if( (test[iterations][0] == 9999) or (test[iterations-1][0] == 9999) ):
+            print("HELLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
+            # iterations+=1
+            pass
+        else:
+            translate(centerScreen*2+25,25)
+            # translate(centerScreen*3,centerScreen)
+            # line(xys[iterations][0],xys[iterations][1],xys[iterations+1][0],xys[iterations+1][1])
+            line(test[iterations][0],test[iterations][1],test[iterations+1][0],test[iterations+1][1])
+            # iterations+=1
+            # if iterations+1>=len(xys):
+        iterations +=1
         if iterations+1>=len(test):
             state+=1
-        time.sleep(1)
+        # time.sleep(.3)
 
 def importGcode(fileName):
     f = open(fileName, 'r')
@@ -77,6 +83,8 @@ def importGcode(fileName):
                 
                 # print(parts[1][1:],parts[2][1:])
                 list.append((x,y))
+            elif parts[0] == "G0":
+                list.append( (9999,9999) )
     # print(list)
     return list
 

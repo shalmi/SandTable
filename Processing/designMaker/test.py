@@ -1,6 +1,6 @@
 from circleLineIntersectionTest import *
 
-f = open('simpleSquareThing.gcode', 'r') #simpleSquareThing
+f = open('squareTest.gcode', 'r') #simpleSquareThing
 pointList = []
 for line in f:
     parts = line.split()
@@ -19,36 +19,49 @@ nextPoint = 0
 currentlyFixingPoints = False
 lastOutsidePoint = 0
 lastInsidePoint = 0
+listlen = len(pointList)
+lastPointWasInCircle = False
 for point in pointList:
     nextPoint+=1
-    if currentlyFixingPoints:
-        currentlyFixingPoints = False
-        newList.append(("G0","G0"))
-        # reEntryPoint = findIntersections(lastOutsidePoint,lastOutsidePoint,circleCenter,circleRadius)
-        replacementPoint = findIntersections(point,lastOutsidePoint,circleCenter,circleRadius)
-        newList.append(replacementPoint)
+    if isPointInCircle(circleCenter,point,circleRadius):
         newList.append(point)
-        pass
-    else:
-        if isPointInCircle(circleCenter,point,circleRadius):
-            newList.append(point)
-            lastInsidePoint = point
-        else: #currently assuming two points cant be out of circle in a row
+        lastInsidePoint = point
+        lastPointWasInCircle = True
+    else: #if this point is not in the circle
+        if lastPointWasInCircle: #if this is exit of the circle
             lastOutsidePoint = point
             #exiting point
-            replacementPoint = findIntersections(point,lastInsidePoint,circleCenter,circleRadius)
-            newList.append(replacementPoint)
-            # currentlyFixingPoints = True #KILLS THIS
-            # now need to make a reentryPoint
-            #assumes there is a next point and a previous point
-            newList.append(("G0","G0"))
-            replacementPoint = findIntersections(point,pointList[nextPoint],circleCenter,circleRadius)
-            newList.append(replacementPoint)
+            replacementPoint = findIntersections(point,pointList[nextPoint-2],circleCenter,circleRadius)
+            if replacementPoint != None:
+                newList.append(replacementPoint)
+
+        # else: #if last point was not in circle
+        #     if nextPoint < listlen: #and there is still another point after this
+        #         if not isPointInCircle(circleCenter,pointList[nextPoint],circleRadius): #if next point is not in circle
+        #             pass
+
+
+        # currentlyFixingPoints = True #KILLS THIS
+        # now need to make a reentryPoint
+        #assumes there is a next point and a previous point
+        # try:
+
+        if nextPoint < listlen: # if there are more points after this
+            # if isPointInCircle(circleCenter,pointList[nextPoint],circleRadius): #if next point is in circle # need to change this to if point intersects!!!
+                # make reentry point
+                replacementPoint = findIntersections(point,pointList[nextPoint],circleCenter,circleRadius)
+                if replacementPoint != None:
+                    newList.append(("G0","G0"))
+                    newList.append(replacementPoint)
+        lastPointWasInCircle = False
+        # except:
+        #     pass
 
 print(pointList)
 print(newList)
 for point in newList:
     if point == ("G0","G0"):
         pass
+        # print("G0 X0 Y0")
     else:
         print("G01 X"+str(point[0])+" Y"+str(point[1]))
