@@ -107,7 +107,7 @@ def findIntersections(point1,point2,circleCenter,circleRadius):
     if len(results) ==1:
         return results[0]
 
-print( findIntersections((0.0, 0.0), (0.0, 0.0), (200, 200), 200) )
+# print( findIntersections((0.0, 0.0), (0.0, 0.0), (200, 200), 200) )
 
 # circleRadius = 200
 # circleCenter = (200,200)

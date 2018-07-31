@@ -1,6 +1,15 @@
 from circleLineIntersectionTest import *
 
-f = open('simpleSquareThing.gcode', 'r') #simpleSquareThing #squareTest
+# SimpleSquareThing
+# G01 X138.000 Y138.000
+# G01 X384.624 Y49.450
+# G01 X378.492 Y444.209
+# G01 X50.000 Y302.573
+# G01 X10.000 Y0.000
+# G01 X300.000 Y-20.000
+
+
+f = open('squareTest.gcode', 'r') #simpleSquareThing #squareTest
 pointList = []
 for line in f:
     parts = line.split()
@@ -25,12 +34,14 @@ nextGcode = "G01"
 for point in pointList:
     nextPoint+=1
     if isPointInCircle(circleCenter,point,circleRadius):
+        
         newList.append( (nextGcode,point[0],point[1]) )
         #newList.append(point)
         lastInsidePoint = point
         lastPointWasInCircle = True
         nextGcode = "G01"
     else: #if this point is not in the circle
+        didLineGoThroughCircle = False
         if lastPointWasInCircle: #if this is exit of the circle
             lastOutsidePoint = point
             #exiting point
@@ -38,6 +49,7 @@ for point in pointList:
             if replacementPoint != None:
                 newList.append( (nextGcode,replacementPoint[0],replacementPoint[1]) )
                 nextGcode = "G00"
+                didLineGoThroughCircle = True
                 # newList.append(replacementPoint)
 
         # else: #if last point was not in circle
@@ -60,8 +72,9 @@ for point in pointList:
                     # newList.append(replacementPoint)
                     newList.append( (nextGcode,replacementPoint[0],replacementPoint[1]) )
                     nextGcode = "G01"
+                    didLineGoThroughCircle = True
 
-        lastPointWasInCircle = False
+        lastPointWasInCircle = didLineGoThroughCircle
         # except:
         #     pass
         
