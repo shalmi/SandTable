@@ -52,15 +52,15 @@ def draw():
         drawTable()
         state+=1
     elif(state ==3):
-        if( (test[iterations][0] == 9999) ):
-            print("HELLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
+        if( (test[iterations][0] == "G09") ):
+            # print("HELLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
             # iterations+=1
             pass
         else:
             translate(centerScreen*2+25,25)
             # translate(centerScreen*3,centerScreen)
             # line(xys[iterations][0],xys[iterations][1],xys[iterations+1][0],xys[iterations+1][1])
-            line(test[iterations][0],test[iterations][1],test[iterations+1][0],test[iterations+1][1])
+            line(test[iterations][1],test[iterations][2],test[iterations+1][1],test[iterations+1][2])
             # iterations+=1
             # if iterations+1>=len(xys):
         iterations +=1
@@ -79,7 +79,7 @@ def importGcode(fileName):
                 y = float(parts[2][1:])
                 
                 # print(parts[1][1:],parts[2][1:])
-                list.append((x,y))
+                list.append((parts[0],x,y))
             elif parts[0] == "G7 ":
                 list.append( (9999,9999) )
     # print(list)

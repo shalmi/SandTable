@@ -48,7 +48,7 @@ for point in pointList:
             replacementPoint = findIntersections(point,pointList[nextPoint-2],circleCenter,circleRadius)
             if replacementPoint != None:
                 newList.append( (nextGcode,replacementPoint[0],replacementPoint[1]) )
-                nextGcode = "G00"
+                nextGcode = "G01"
                 didLineGoThroughCircle = True
                 # newList.append(replacementPoint)
 
@@ -71,7 +71,7 @@ for point in pointList:
                     # newList.append(("G0","G0"))
                     # newList.append(replacementPoint)
                     newList.append( (nextGcode,replacementPoint[0],replacementPoint[1]) )
-                    nextGcode = "G01"
+                    nextGcode = "G00"
                     didLineGoThroughCircle = True
 
         lastPointWasInCircle = didLineGoThroughCircle
