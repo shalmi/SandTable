@@ -25,6 +25,19 @@ def findCloserPoint(origin, points):
     else:
         return points[1]
 
+def numBetweenTwoNums(numIN,range1,range2):
+    if range1 < range2:
+        lowerNum = range1
+        upperNum = range2
+    else:
+        lowerNum = range2
+        upperNum = range1
+    
+    if lowerNum <= numIN <= upperNum:
+        return True
+    else:
+        return False
+
 def findIntersections(point1,point2,circleCenter,circleRadius):
     results = []
     p1x = point1[0]
@@ -97,6 +110,26 @@ def findIntersections(point1,point2,circleCenter,circleRadius):
         if (xint2 != 0.0) or (yint2 != 0.0):
             results.append((round(xint2,4),round(yint2,4)))
         #print(yint1,yint2,xint1,xint2)
+    print("before: ",results)
+    badpoints = []
+    for eachResult in results: #take out crazy numbers
+        outOfBounds = False
+        if eachResult[0] <= float(circleCenter[0])-float(circleRadius) or eachResult[0] >= float(circleCenter[0]+circleRadius):
+            outOfBounds = True
+        elif eachResult[1] <= float(circleCenter[1]-circleRadius) or eachResult[1] >= float(circleCenter[1]+circleRadius):
+            outOfBounds = True
+        elif not numBetweenTwoNums(eachResult[0],p1x,p2x): #check to see if the new point is even between the two given points ...
+            outOfBounds = True
+        elif not numBetweenTwoNums(eachResult[1],p1y,p2y):
+            outOfBounds = True
+        if outOfBounds:
+            # eachResult = None
+            badpoints.append(eachResult)
+            print(eachResult, "WHOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
+        
+    for badegg in badpoints:
+        results.remove(badegg)
+    print("after: ",results)
     if len(results) == 2:
         result = findCloserPoint(point1,results)
         if result[0] == 0 and result[1] == 400.0:

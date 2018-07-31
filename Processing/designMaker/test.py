@@ -9,7 +9,7 @@ from circleLineIntersectionTest import *
 # G01 X300.000 Y-20.000
 
 
-f = open('squareTest.gcode', 'r') #simpleSquareThing #squareTest
+f = open('test.gcode', 'r') #simpleSquareThing #squareTest
 pointList = []
 for line in f:
     parts = line.split()
@@ -78,7 +78,7 @@ for point in pointList:
         # except:
         #     pass
         
-
+f = open('helloworld.gcode','w')
 print(pointList)
 print(newList)
 for point in newList:
@@ -86,4 +86,8 @@ for point in newList:
         pass
         # print("G0 X0 Y0")
     else:
-        print(point[0]+ " X"+str(point[1])+" Y"+str(point[2]))
+        # print(point[0]+ " X"+str(point[1])+" Y"+str(point[2]))
+        f.write(point[0]+ " X"+str(point[1])+" Y"+str(point[2])+"\n")
+
+# f.write('hello world')
+f.close()
