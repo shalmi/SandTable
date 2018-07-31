@@ -25,7 +25,7 @@ def setup():
     background(0)
     
     global test
-    test = importGcode("test2.gcode") #starTest.gcode #simpleSquareThing
+    test = importGcode("test.gcode") #starTest.gcode #simpleSquareThing
 
 def draw():
     global state
@@ -77,13 +77,13 @@ def importGcode(fileName):
     for line in f:
         parts = line.split()
         if len(parts) == 3:
-            if parts[0] == "G01":
+            if parts[0] == "G01" or parts[0] == "G00":
                 x = float(parts[1][1:])
                 y = float(parts[2][1:])
                 
                 # print(parts[1][1:],parts[2][1:])
                 list.append((x,y))
-            elif parts[0] == "G0":
+            elif parts[0] == "G7 ":
                 list.append( (9999,9999) )
     # print(list)
     return list

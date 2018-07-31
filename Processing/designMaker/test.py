@@ -1,6 +1,6 @@
 from circleLineIntersectionTest import *
 
-f = open('squareTest.gcode', 'r') #simpleSquareThing
+f = open('simpleSquareThing.gcode', 'r') #simpleSquareThing #squareTest
 pointList = []
 for line in f:
     parts = line.split()
@@ -21,19 +21,24 @@ lastOutsidePoint = 0
 lastInsidePoint = 0
 listlen = len(pointList)
 lastPointWasInCircle = False
+nextGcode = "G01"
 for point in pointList:
     nextPoint+=1
     if isPointInCircle(circleCenter,point,circleRadius):
-        newList.append(point)
+        newList.append( (nextGcode,point[0],point[1]) )
+        #newList.append(point)
         lastInsidePoint = point
         lastPointWasInCircle = True
+        nextGcode = "G01"
     else: #if this point is not in the circle
         if lastPointWasInCircle: #if this is exit of the circle
             lastOutsidePoint = point
             #exiting point
             replacementPoint = findIntersections(point,pointList[nextPoint-2],circleCenter,circleRadius)
             if replacementPoint != None:
-                newList.append(replacementPoint)
+                newList.append( (nextGcode,replacementPoint[0],replacementPoint[1]) )
+                nextGcode = "G00"
+                # newList.append(replacementPoint)
 
         # else: #if last point was not in circle
         #     if nextPoint < listlen: #and there is still another point after this
@@ -51,11 +56,15 @@ for point in pointList:
                 # make reentry point
                 replacementPoint = findIntersections(point,pointList[nextPoint],circleCenter,circleRadius)
                 if replacementPoint != None:
-                    newList.append(("G0","G0"))
-                    newList.append(replacementPoint)
+                    # newList.append(("G0","G0"))
+                    # newList.append(replacementPoint)
+                    newList.append( (nextGcode,replacementPoint[0],replacementPoint[1]) )
+                    nextGcode = "G01"
+
         lastPointWasInCircle = False
         # except:
         #     pass
+        
 
 print(pointList)
 print(newList)
@@ -64,4 +73,4 @@ for point in newList:
         pass
         # print("G0 X0 Y0")
     else:
-        print("G01 X"+str(point[0])+" Y"+str(point[1]))
+        print(point[0]+ " X"+str(point[1])+" Y"+str(point[2]))
