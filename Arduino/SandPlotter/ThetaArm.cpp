@@ -137,7 +137,7 @@ bool ThetaArm::MoveTowardsDestination(){ //This is not a good function and needs
     }
     else if (currentLocation>desiredLocation){
         ChangeDirection(clockWise);
-        TakeStep(); // Move Towards Motor
+        TakeStep(); 
     }
     else{
         return true;

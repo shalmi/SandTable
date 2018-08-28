@@ -132,6 +132,7 @@ void RadiusArm::SetDestination(long destination){
 }
 void SetDestinationAsCalculatedR(float destination)
 {
+    // destination given should be between 
     SetDestination( (long)destination )
 }
 
