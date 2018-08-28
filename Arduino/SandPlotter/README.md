@@ -16,6 +16,7 @@ Arduino code to run a homemade sisyphus table
 
 ## Videos of Progress:
 Part 1: https://www.youtube.com/watch?v=FCUINuvV7K4
+
 Part 2: https://www.youtube.com/watch?v=-LiHQ8IdzhQ
 
 
