@@ -15,6 +15,7 @@ class Stepper
     Stepper();
     void Init(int _directionPin, int _enablePin, int _stepPin, int _speed);
     void Init(int _directionPin, int _enablePin, int _stepPin, int _speed, int _chipSelectPin);
+    void Startup();
     void SetSpeed(int _speed);
     //Takes a full Step
     //currently goes at 50*speed (higher is slower)

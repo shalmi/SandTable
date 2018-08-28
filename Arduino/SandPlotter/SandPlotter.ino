@@ -32,6 +32,8 @@ const int thetaHallPin = 66; //THIS IS NOT TRUE....shhhh
 // const int stepsForRevolution = 3200;
 
 int state = 0;
+float nextMajorTheta = 0;
+float nextMajorR = 0;
 
 SimpleTimer timer;
 
@@ -67,6 +69,11 @@ void RepeatTask()
 {
     Serial.println("15 second timer");
 }
+void CartesianToPolar(float xCoord,float yCoord)
+{
+    nextMajorTheta = atan(yCoord/xCoord);
+    nextMajorR = sqrt( sq(xCoord) + sq(yCoord) );
+}
 
 // void InitialCalibration(){
 
@@ -77,12 +84,12 @@ void loop()
     // state = 17;
     switch (state)
     {
-    case 17:
-        radiusArm.Startup();
-        thetaArm.Startup();
+    // case 17:
+    //     radiusArm.Startup();
+    //     thetaArm.Startup();
         break;
     case DELAYONBOOT:
-        delay(1000);
+        // delay(1000);
         state++;
     case STARTUP:
         if (radiusArm.Startup() && thetaArm.Startup() )
@@ -95,7 +102,7 @@ void loop()
     case CALIBRATION:
         if ( radiusArm.Calibrate_R_Axis() && thetaArm.Calibrate_Theta_Axis() )//need to check if already calibrated
         {
-            state += 1;
+            state += 2; //1 to go to userinput...2 to cartesian
             Serial.println("State Entering `USERINPUT` Mode...");
         }
         break;
@@ -121,6 +128,34 @@ void loop()
         radiusArm.ArmLoop();
         thetaArm.ArmLoop();
         break;
+    case USERINPUTCARTESIAN:
+    // if there's any serial available, read it:
+    while (Serial.available() > 0)
+    {
+        // look for the next valid integer in the incoming serial stream:
+        int xCoord = Serial.parseInt();
+        int yCoord = Serial.parseInt();
+        // look for the newline. That's the end of your sentence:
+        if (Serial.read() == '\n')
+        {
+            Serial.print("x: ");
+            Serial.println(xCoord);
+            Serial.print("y: ");
+            Serial.println(yCoord);
+            CartesianToPolar((float)xCoord,(float)yCoord);
+            Serial.print("R: ");
+            Serial.println(nextMajorR);
+            Serial.print("theta: ");
+            Serial.println(nextMajorTheta);
+            radiusArm.SetDestinationAsCalculatedR(nextMajorR);
+            thetaArm.SetDestinationAsCalculatedRadians(nextMajorTheta);
+            // radiusArm.SetDestination((long)steps);
+            // thetaArm.SetDestination((long)secondSteps);
+        }
+    }
+    radiusArm.ArmLoop();
+    thetaArm.ArmLoop();
+    break;
     default:
         state = 0;
         Serial.println("Default Catch `state` var in unkown State: " + String(state));

@@ -6,5 +6,6 @@
 #define STARTUP (1)
 #define CALIBRATION (2)
 #define USERINPUT (3)
+#define USERINPUTCARTESIAN (4)
 
 #endif

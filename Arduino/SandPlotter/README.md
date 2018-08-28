@@ -15,6 +15,7 @@ Arduino code to run a homemade sisyphus table
 - [ ] Make a state where the Theta goes to user input position
 
 ## Videos of Progress:
-https://www.youtube.com/watch?v=FCUINuvV7K4
+Part 1: https://www.youtube.com/watch?v=FCUINuvV7K4
+Part 2: https://www.youtube.com/watch?v=-LiHQ8IdzhQ
 
 

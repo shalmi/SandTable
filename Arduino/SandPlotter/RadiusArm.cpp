@@ -4,6 +4,7 @@
 
 
 //It takes roughly 80.36 steps to move 1mm
+// Center is 6800
 
 RadiusArm::RadiusArm(int directionPin, int enablePin, int stepPin, int _innerEndStop, int _outerEndStop)
 { //For use with normal stepper
@@ -94,6 +95,7 @@ bool RadiusArm::Calibrate_R_Axis()
             stepCounter = 0;
             currentLocation = 0;
             DisableMotor();
+            calibrationFinished = true;
             return true;
         }
         return false;
@@ -106,6 +108,7 @@ bool RadiusArm::Startup()
     }
     else
     {
+        stepper.Startup();
         TakeStep();
         if (ReverseDirectionOnBump())
         {
@@ -126,6 +129,10 @@ void RadiusArm::SetDestination(long destination){
     desiredLocation = destination;
     armState = GO_TO_POINT;
     stepper.EnableMotor();
+}
+void SetDestinationAsCalculatedR(float destination)
+{
+    SetDestination( (long)destination )
 }
 
 void RadiusArm::ChangeDirection(bool desiredDirection){

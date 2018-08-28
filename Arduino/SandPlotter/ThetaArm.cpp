@@ -102,6 +102,7 @@ bool ThetaArm::Startup()
     }
     else
     {
+        stepper.Startup();
         if (CalibrateHallEffectSensor())
         {
             startupFinished = true;

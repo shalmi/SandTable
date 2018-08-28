@@ -24,8 +24,14 @@ void Stepper::Init(int _directionPin, int _enablePin, int _stepPin, int _speed)
     pinMode(directionPin, OUTPUT);
     pinMode(enablePin, OUTPUT);
     // Set Enable low ...so the Stepper Works
-    EnableMotor();
+    // EnableMotor();
+    DisableMotor();
     timeAtNextPulse = micros() + (speed*50);
+}
+
+void Stepper::Startup()
+{
+    EnableMotor();
 }
 
 //IT DOESNT WORK>>>DONT USE
