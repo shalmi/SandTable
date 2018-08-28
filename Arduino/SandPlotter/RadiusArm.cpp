@@ -93,8 +93,23 @@ bool RadiusArm::Calibrate_R_Axis()
             fullDistance = stepCounter;
             Serial.println("Steps between switches = " + String(stepCounter));
             stepCounter = 0;
-            currentLocation = 0;
+
+            // this line was currentLocation = 0;
+            // instead of setting current location to 0
+            // this will set it to ~ -6800 which should make it move to center at start
+            currentLocation = -1*centerOffset;
+
             DisableMotor();
+            
+            // fullDistance should be massaged
+            // aka delete the distance to center ~6800
+            // also delete 200 or so for the switch
+            // this should be done once when full distance is calibrated
+            
+            // lets assume this leaves fullDistance to be about 8000
+            // calculate this line ONLY ONCE since it will be use Constantly
+            fullDistOverRange = fullDistance/(float)500;
+
             calibrationFinished = true;
             return true;
         }
@@ -132,7 +147,11 @@ void RadiusArm::SetDestination(long destination){
 }
 void SetDestinationAsCalculatedR(float destination)
 {
-    // destination given should be between 
+    // destination given should already be massaged
+    // Because r shouldnt ever be negative this should just be 0-500
+    // is 0-500 enough...should be since it is going to be a float
+
+    destination = destination*fullDistOverRange;
     SetDestination( (long)destination )
 }
 

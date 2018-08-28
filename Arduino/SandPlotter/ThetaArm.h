@@ -22,21 +22,22 @@ class ThetaArm
 	void ChangeDirection(bool newDirection);
 	bool OnHallEffect();
 
-	const bool clockWise = false;
-	const bool counterClockWise = true;
+	final bool clockWise = false;
+	final bool counterClockWise = true;
 	bool currentDirection = clockWise;
 	long desiredLocation = 0;
 	long currentLocation = 0;
 	long stepCounter = 0;
 	// long fullDistance;
-	const bool HIT = true;
-	const bool NOT_HIT = false;
+	final bool HIT = true;
+	final bool NOT_HIT = false;
 	int hallValue = 512; //set to nothing pretty much
 	bool startupFinished = false;
 	bool calibrationFinished = false;
 	int magnetSensedValue = 500;
 	int hallEffectCalibrationCounter = 0;
 	long fullDistance = 0;
+	final long TheoreticalStepsInRotation = 8200;
 	// const int directionPin;
 	// const int enablePin;
 	// const int stepPin;
@@ -49,6 +50,7 @@ class ThetaArm
 	bool Calibrate_Theta_Axis();
 	void DisableMotor();
 	void SetDestination(long destination);
+	void SetDestinationAsCalculatedRadians(float nextMajorTheta);
 	void ArmLoop();
 };
 

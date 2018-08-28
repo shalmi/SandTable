@@ -74,15 +74,28 @@ void CartesianToPolar(float xCoord,float yCoord)
     // assume that xCoord and yCoord are based on a 1000x1000 field
     // where the top left is 0,0
     // This should set 500,500 to be 0,0
+    if (xCoord >=1000){
+        xCoord =1000;
+    }
+    if (xCoord<=0){
+        xCoord = 0;
+    }
+    if (yCoord >=1000){
+        yCoord =1000;
+    }
+    if (yCoord<=0){
+        yCoord = 0;
+    }
     xCoord -= 500;
     yCoord -= 500;
+
+    // basic math equations for calculating r and theta
+    // hopefully this doesnt take TOO long on an arduino.
+    // I would like to be able to have these calcs on the arduino itself.
     nextMajorTheta = atan(yCoord/xCoord);
     nextMajorR = sqrt( sq(xCoord) + sq(yCoord) );
 }
 
-// void InitialCalibration(){
-
-// }
 
 void loop()
 {   
@@ -154,8 +167,7 @@ void loop()
             Serial.println(nextMajorTheta);
             radiusArm.SetDestinationAsCalculatedR(nextMajorR);
             thetaArm.SetDestinationAsCalculatedRadians(nextMajorTheta);
-// Destination should be theta in radians....
-    // ....so 0-π (3.14159 or so)
+
 
             // radiusArm.SetDestination((long)steps);
             // thetaArm.SetDestination((long)secondSteps);

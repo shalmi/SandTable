@@ -119,9 +119,21 @@ void ThetaArm::EnableMotor(){
     stepper.EnableMotor();
 }
 void ThetaArm::SetDestination(long destination){
+    // TODO: michael fix this line below. make all the floats floaty
     desiredLocation = (destination*8200)/360;
     armState = GO_TO_POINT;
     stepper.EnableMotor();
+}
+
+void ThetaArm::SetDestinationAsCalculatedRadians(float nextMajorTheta){
+    // nextMajorTheta should be theta in radians....
+    // ....so 0-2π (6.28319 or so)
+    //we need to scale this to our totalDistance
+
+    desiredLocation = nextMajorTheta * (float)stepsInRotationOverTwoPi; //*8200)/360;
+    armState = GO_TO_POINT;
+    stepper.EnableMotor();
+
 }
 
 void ThetaArm::ChangeDirection(bool desiredDirection){
@@ -133,7 +145,7 @@ void ThetaArm::ChangeDirection(bool desiredDirection){
 bool ThetaArm::MoveTowardsDestination(){ //This is not a good function and needs to fix issues with the fact that 361 = 1 etc
     if(currentLocation<desiredLocation){
         ChangeDirection(counterClockWise);
-        TakeStep(); // Move Towards Idler
+        TakeStep();
     }
     else if (currentLocation>desiredLocation){
         ChangeDirection(clockWise);
