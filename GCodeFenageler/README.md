@@ -1,6 +1,8 @@
 # GCodeFenageler
-The arduino is super slow at floating point math so im gonna do it all
-before the system ever reads the gcode...lets make some MCode
+The arduino is super slow at floating point math so I'm gonna do it all
+before the system ever reads the gcode
+
+...lets make some MCode
 
 ## TODO:
 - [ ] Read GCode Files
