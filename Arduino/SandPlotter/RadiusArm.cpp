@@ -145,14 +145,15 @@ void RadiusArm::SetDestination(long destination){
     armState = GO_TO_POINT;
     stepper.EnableMotor();
 }
-void SetDestinationAsCalculatedR(float destination)
+void RadiusArm::SetDestinationAsCalculatedR(float destination)
 {
     // destination given should already be massaged
     // Because r shouldnt ever be negative this should just be 0-500
     // is 0-500 enough...should be since it is going to be a float
 
     destination = destination*fullDistOverRange;
-    SetDestination( (long)destination )
+    Serial.println(destination);
+    SetDestination( (long)destination );
 }
 
 void RadiusArm::ChangeDirection(bool desiredDirection){

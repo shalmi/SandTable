@@ -106,6 +106,7 @@ bool ThetaArm::Startup()
         if (CalibrateHallEffectSensor())
         {
             startupFinished = true;
+            stepsInRotationOverTwoPi = (float)TheoreticalStepsInRotation/pi;
             Serial.println("ThetaArm Startup Finished");
             return true;
         }
@@ -129,8 +130,8 @@ void ThetaArm::SetDestinationAsCalculatedRadians(float nextMajorTheta){
     // nextMajorTheta should be theta in radians....
     // ....so 0-2π (6.28319 or so)
     //we need to scale this to our totalDistance
-
     desiredLocation = nextMajorTheta * (float)stepsInRotationOverTwoPi; //*8200)/360;
+    Serial.println(desiredLocation);
     armState = GO_TO_POINT;
     stepper.EnableMotor();
 

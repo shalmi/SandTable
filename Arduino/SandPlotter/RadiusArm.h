@@ -46,7 +46,7 @@ class RadiusArm
 	bool Calibrate_R_Axis();
 	void DisableMotor();
 	void SetDestination(long destination);
-	void SetDestinationAsCalculatedR(float destination)
+	void SetDestinationAsCalculatedR(float destination);
 	void ArmLoop();
 };
 

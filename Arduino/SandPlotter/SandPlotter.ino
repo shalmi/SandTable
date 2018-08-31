@@ -4,9 +4,19 @@
  *  
  */
 
+
+
+// Michaels Sand Table Starting Up
+// RadiusArm Startup Finished
+// HallEffect Calibration at: 215
+// ThetaArm Startup Finished
+// State Entering `CALIBRATION` Mode...
+// Steps between switches = 17451
+// Full Distance of Steps for Theta: 152619
+// State Entering `USERINPUT` Mode...
+
 #include "Arduino.h"
 #include "Stepper.h"
-#include "SimpleTimer.h"
 #include "Definitions.h"
 #include "RadiusArm.h"
 #include "ThetaArm.h"
@@ -35,7 +45,6 @@ int state = 0;
 float nextMajorTheta = 0;
 float nextMajorR = 0;
 
-SimpleTimer timer;
 
 RadiusArm radiusArm = RadiusArm(rDirPin, rEnable, rStepPin, innerLimit, outerLimit); //Works for Normal Driver
 ThetaArm thetaArm = ThetaArm(thetaDirPin,thetaEnable,thetaStepPin,thetaHallPin);
@@ -50,7 +59,6 @@ void setup()
 {
     Serial.begin(9600);
     Serial.println("Michaels Sand Table Starting Up");
-    timer.setInterval(15000, RepeatTask);
     //  pinMode(pushButton, INPUT_PULLUP);
 
     //TMC2130
@@ -64,11 +72,6 @@ void setup()
     thetaArm.Setup();
 }
 
-// function to be called repeatedly
-void RepeatTask()
-{
-    Serial.println("15 second timer");
-}
 void CartesianToPolar(float xCoord,float yCoord)
 {
     // assume that xCoord and yCoord are based on a 1000x1000 field
