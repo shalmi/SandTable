@@ -83,6 +83,13 @@ bool ThetaArm::CalibrateHallEffectSensor() //rewrite to work with hall effect se
 // make a 360 and measure the steps 
 bool ThetaArm::Calibrate_Theta_Axis()
 {
+    currentLocation = 0;
+    return true; //nothing can exist here till hall effect sensor exists
+    /// DUMMY till this is removed. this func was causing too many issues.
+    // and not really working too great either
+
+
+
     // currentLocation = 0;
     TakeStep(); // this needs to return a bool...also wtf
     fullDistance++;
@@ -91,6 +98,7 @@ bool ThetaArm::Calibrate_Theta_Axis()
         DisableMotor();
         Serial.print("Full Distance of Steps for Theta: ");
         Serial.println(fullDistance);
+        currentLocation = 0;
         return true; //nothing can exist here till hall effect sensor exists
     }
     return false;
@@ -106,7 +114,7 @@ bool ThetaArm::Startup()
         if (CalibrateHallEffectSensor())
         {
             startupFinished = true;
-            stepsInRotationOverTwoPi = (float)TheoreticalStepsInRotation/pi;
+            stepsInRotationOverTwoPi = (float)TheoreticalStepsInRotation/dosPI;
             Serial.println("ThetaArm Startup Finished");
             return true;
         }

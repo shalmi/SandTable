@@ -72,31 +72,67 @@ void setup()
     thetaArm.Setup();
 }
 
-void CartesianToPolar(float xCoord,float yCoord)
+void CartesianToPolar(float x,float y)
 {
     // assume that xCoord and yCoord are based on a 1000x1000 field
     // where the top left is 0,0
     // This should set 500,500 to be 0,0
-    if (xCoord >=1000){
-        xCoord =1000;
+
+/////////////////////////////////
+    // if (xCoord >=1000){
+    //     xCoord =1000;
+    // }
+    // else if (xCoord<=0){
+    //     xCoord = 0; //.00001;
+    // }
+    // if (yCoord >=1000){
+    //     yCoord =1000;
+    // }
+    // else if (yCoord<=0){
+    //     yCoord = 0; //.00001;
+    // }
+    // xCoord -= 500;
+    // yCoord -= 500;
+    // float quadrantOffset = 0;
+    // if (xCoord > 0){
+    //     if(yCoord <0){
+    //         quadrantOffset=6.28318;
+    //     }
+    // }
+    // else{ // if x is negative
+    //     quadrantOffset = 3.14159;
+    // }
+/////////////////////////////////
+
+    x -= 500;
+    y -= 500;
+
+    if(x == 0 && y == 0 ){
+        nextMajorR = 0;
+        nextMajorTheta = 0;
+        return;
     }
-    if (xCoord<=0){
-        xCoord = 0;
+    nextMajorR = sqrt( sq(x) + sq(y) );
+
+    if(x == 0 && 0 < y){
+        nextMajorTheta = PI/2.0;
+    }else if(x == 0 && y < 0){
+        nextMajorTheta = PI*3.0/2.0;
+    }else if(x < 0){ //x != 0
+        nextMajorTheta = atan(y/x) + PI;
+    }else if (y < 0){
+        nextMajorTheta = atan(y/x) + 2.0*PI;
+    }else{
+        nextMajorTheta = atan(y/x);
     }
-    if (yCoord >=1000){
-        yCoord =1000;
-    }
-    if (yCoord<=0){
-        yCoord = 0;
-    }
-    xCoord -= 500;
-    yCoord -= 500;
+
 
     // basic math equations for calculating r and theta
     // hopefully this doesnt take TOO long on an arduino.
     // I would like to be able to have these calcs on the arduino itself.
-    nextMajorTheta = atan(yCoord/xCoord);
-    nextMajorR = sqrt( sq(xCoord) + sq(yCoord) );
+
+    // nextMajorTheta = atan(yCoord/xCoord)+quadrantOffset;
+    // nextMajorR = sqrt( sq(xCoord) + sq(yCoord) );
 }
 
 

@@ -26,7 +26,7 @@ class RadiusArm
 	const bool inward = false;
 	long stepCounter = 0;
 	float fullDistOverRange;
-	long centerOffset = 600;
+	long centerOffset = 6800;
 	long fullDistance;
 	bool currentDirection = outward;
 	long desiredLocation = 0;

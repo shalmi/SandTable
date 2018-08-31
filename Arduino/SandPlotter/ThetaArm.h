@@ -39,7 +39,8 @@ class ThetaArm
 	long fullDistance = 0;
 	const long TheoreticalStepsInRotation = 8200;
 	long stepsInRotationOverTwoPi = 0;
-	const float pi = 3.1415926;
+	const float pi = PI;
+	const float dosPI = 2*PI;
 	// const int directionPin;
 	// const int enablePin;
 	// const int stepPin;

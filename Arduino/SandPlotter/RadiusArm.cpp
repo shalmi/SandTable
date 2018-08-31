@@ -4,7 +4,8 @@
 
 
 //It takes roughly 80.36 steps to move 1mm
-// Center is 6800
+// Center is 6000
+//Right Before End Stop is 16750
 
 RadiusArm::RadiusArm(int directionPin, int enablePin, int stepPin, int _innerEndStop, int _outerEndStop)
 { //For use with normal stepper
