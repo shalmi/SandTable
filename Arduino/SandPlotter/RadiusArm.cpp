@@ -178,7 +178,7 @@ bool RadiusArm::MoveTowardsDestination(){
     return false;
 }
 
-void RadiusArm::ArmLoop(){
+byte RadiusArm::ArmLoop(){
 
     switch (armState)
     {
@@ -188,10 +188,12 @@ void RadiusArm::ArmLoop(){
             if(MoveTowardsDestination()){
                 stepper.DisableMotor();
                 armState = IDLE;
+                return 1;
             }
             break;
     
         default:
             break;
     }
+    return 0;
 }

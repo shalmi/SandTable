@@ -47,7 +47,7 @@ class RadiusArm
 	void DisableMotor();
 	void SetDestination(long destination);
 	void SetDestinationAsCalculatedR(float destination);
-	void ArmLoop();
+	byte ArmLoop();
 };
 
 // extern RadiusArm fan;

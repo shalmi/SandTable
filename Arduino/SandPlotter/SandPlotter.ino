@@ -44,6 +44,19 @@ const int thetaHallPin = 66; //THIS IS NOT TRUE....shhhh
 int state = 0;
 float nextMajorTheta = 0;
 float nextMajorR = 0;
+float previousMajorTheta = 0;
+float previousMajorR = 0;
+
+float nextMajorX = 0.0;
+float nextMajorY = 0.0;
+float lastMajorX = 0.0;
+float lastMajorY = 0.0;
+
+double majorPointIndex = 0;
+
+float arrayMajorXs[] = {2, 4, 8, 3, 6};
+float arrayMajorYs[] = {2, 4, 8, 3, 6};
+
 
 
 RadiusArm radiusArm = RadiusArm(rDirPin, rEnable, rStepPin, innerLimit, outerLimit); //Works for Normal Driver
@@ -186,35 +199,64 @@ void loop()
         thetaArm.ArmLoop();
         break;
     case USERINPUTCARTESIAN:
-    // if there's any serial available, read it:
-    while (Serial.available() > 0)
-    {
-        // look for the next valid integer in the incoming serial stream:
-        int xCoord = Serial.parseInt();
-        int yCoord = Serial.parseInt();
-        // look for the newline. That's the end of your sentence:
-        if (Serial.read() == '\n')
+        // if there's any serial available, read it:
+        while (Serial.available() > 0)
         {
-            Serial.print("x: ");
-            Serial.println(xCoord);
-            Serial.print("y: ");
-            Serial.println(yCoord);
-            CartesianToPolar((float)xCoord,(float)yCoord);
-            Serial.print("R: ");
-            Serial.println(nextMajorR);
-            Serial.print("theta: ");
-            Serial.println(nextMajorTheta);
-            radiusArm.SetDestinationAsCalculatedR(nextMajorR);
-            thetaArm.SetDestinationAsCalculatedRadians(nextMajorTheta);
+            // look for the next valid integer in the incoming serial stream:
+            int xCoord = Serial.parseInt();
+            int yCoord = Serial.parseInt();
+            // look for the newline. That's the end of your sentence:
+            if (Serial.read() == '\n')
+            {
+                Serial.print("x: ");
+                Serial.println(xCoord);
+                Serial.print("y: ");
+                Serial.println(yCoord);
+
+                // Set Old Values to = Last new values
+                previousMajorTheta = nextMajorTheta;
+                previousMajorR = nextMajorR;
+
+                CartesianToPolar((float)xCoord,(float)yCoord);
+                Serial.print("R: ");
+                Serial.println(nextMajorR);
+                Serial.print("theta: ");
+                Serial.println(nextMajorTheta);
+                radiusArm.SetDestinationAsCalculatedR(nextMajorR);
+                thetaArm.SetDestinationAsCalculatedRadians(nextMajorTheta);
 
 
-            // radiusArm.SetDestination((long)steps);
-            // thetaArm.SetDestination((long)secondSteps);
+                // radiusArm.SetDestination((long)steps);
+                // thetaArm.SetDestination((long)secondSteps);
+            }
         }
-    }
-    radiusArm.ArmLoop();
-    thetaArm.ArmLoop();
-    break;
+        radiusArm.ArmLoop();
+        thetaArm.ArmLoop();
+        break;
+    case 5: // Go through a set of Major Points.
+        
+        // Inform me when there
+        bool radiusArmReady = (radiusArm.ArmLoop() == 1);
+        bool thetaArmReady = (thetaArm.ArmLoop() == 1);
+
+        // If both Motors are already at Destination
+        if (radiusArmReady && thetaArmReady){
+            // Set majorPointIndex to next variable
+            majorPointIndex++;
+            // arrayMajorXs[majorPointIndex]
+            // arrayMajorXs
+
+            // Convert Cartesian to Polar
+            // changes this function to receive pointers for where to assign vars
+            CartesianToPolar(arrayMajorXs[majorPointIndex],arrayMajorYs[majorPointIndex],pointerToR, pointerToTheta);
+
+            // Set Next Major Destination
+            radiusArm.SetDestinationAsCalculatedR(pointerToR_DEREFERENCED);
+            thetaArm.SetDestinationAsCalculatedRadians(pointerToTheta_DEREFERENCED);
+
+        }
+    
+
     default:
         state = 0;
         Serial.println("Default Catch `state` var in unkown State: " + String(state));
