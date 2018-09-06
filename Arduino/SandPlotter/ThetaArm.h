@@ -54,7 +54,7 @@ class ThetaArm
 	void DisableMotor();
 	void SetDestination(long destination);
 	void SetDestinationAsCalculatedRadians(float nextMajorTheta);
-	void ArmLoop();
+	byte ArmLoop();
 };
 
 // extern RadiusArm fan;

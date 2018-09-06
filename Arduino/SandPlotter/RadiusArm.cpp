@@ -183,6 +183,7 @@ byte RadiusArm::ArmLoop(){
     switch (armState)
     {
         case IDLE:
+            return 1;
             break;
         case GO_TO_POINT:
             if(MoveTowardsDestination()){

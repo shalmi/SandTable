@@ -52,14 +52,13 @@ float nextMajorY = 0.0;
 float lastMajorX = 0.0;
 float lastMajorY = 0.0;
 
-double majorPointIndex = 0;
+double majorPointIndex = -1;
+int majorPointArraySize = 5;
+float arrayMajorXs[] = {500,750, 500, 250, 500};
+float arrayMajorYs[] = {500,500, 750, 500, 250};
 
-float arrayMajorXs[] = {2, 4, 8, 3, 6};
-float arrayMajorYs[] = {2, 4, 8, 3, 6};
-
-float *pointerToR;
-float *pointerToTheta;
-
+bool radiusArmReady = false;
+bool thetaArmReady = false;
 
 RadiusArm radiusArm = RadiusArm(rDirPin, rEnable, rStepPin, innerLimit, outerLimit); //Works for Normal Driver
 ThetaArm thetaArm = ThetaArm(thetaDirPin,thetaEnable,thetaStepPin,thetaHallPin);
@@ -144,7 +143,8 @@ void loop()
     case CALIBRATION:
         if ( radiusArm.Calibrate_R_Axis() && thetaArm.Calibrate_Theta_Axis() )//need to check if already calibrated
         {
-            state += 2; //1 to go to userinput...2 to cartesian
+            // state +=1; //1 to go to userinput...2 to cartesian
+            state =5;
             Serial.println("State Entering `USERINPUT` Mode...");
         }
         break;
@@ -209,8 +209,8 @@ void loop()
         
         // Inform me when there
         // each bool == True when that motor is waiting on a new command
-        bool radiusArmReady = (radiusArm.ArmLoop() == 1);
-        bool thetaArmReady = (thetaArm.ArmLoop() == 1);
+        radiusArmReady = (radiusArm.ArmLoop() == 1);
+        thetaArmReady = (thetaArm.ArmLoop() == 1);
 
         // If both Motors are already at Destination
         if (radiusArmReady && thetaArmReady){
@@ -218,13 +218,18 @@ void loop()
             majorPointIndex++;
 
             // Convert Cartesian to Polar
-            CartesianToPolar(arrayMajorXs[majorPointIndex],arrayMajorYs[majorPointIndex],&nextMajorR, &nextMajorTheta);
+            CartesianToPolar(arrayMajorXs[(int)majorPointIndex],arrayMajorYs[(int)majorPointIndex],&nextMajorR, &nextMajorTheta);
 
             // Set Next Major Destination
             radiusArm.SetDestinationAsCalculatedR(nextMajorR);
             thetaArm.SetDestinationAsCalculatedRadians(nextMajorTheta);
+            Serial.print("NEXT POINT: ");
+            Serial.print(nextMajorR);
+            Serial.print(", ");
+            Serial.println(nextMajorTheta);
 
         }
+        break;
     
 
     default:

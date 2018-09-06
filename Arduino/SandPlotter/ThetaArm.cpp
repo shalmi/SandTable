@@ -166,20 +166,23 @@ bool ThetaArm::MoveTowardsDestination(){ //This is not a good function and needs
     return false;
 }
 
-void ThetaArm::ArmLoop(){
+byte ThetaArm::ArmLoop(){
 
     switch (armState)
     {
         case IDLE:
+            return 1;
             break;
         case GO_TO_POINT:
             if(MoveTowardsDestination()){
                 DisableMotor();
                 armState = IDLE;
+                return 1;
             }
             break;
     
         default:
             break;
     }
+    return 0;
 }
