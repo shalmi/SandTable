@@ -57,6 +57,8 @@ double majorPointIndex = 0;
 float arrayMajorXs[] = {2, 4, 8, 3, 6};
 float arrayMajorYs[] = {2, 4, 8, 3, 6};
 
+float *pointerToR;
+float *pointerToTheta;
 
 
 RadiusArm radiusArm = RadiusArm(rDirPin, rEnable, rStepPin, innerLimit, outerLimit); //Works for Normal Driver
@@ -85,67 +87,37 @@ void setup()
     thetaArm.Setup();
 }
 
-void CartesianToPolar(float x,float y)
+void CartesianToPolar(float x,float y, float *R, float *Theta)
 {
+    // basic math equations for calculating r and theta
+    // hopefully this doesnt take TOO long on an arduino.
+    // I would like to be able to have these calcs on the arduino itself.
+
     // assume that xCoord and yCoord are based on a 1000x1000 field
     // where the top left is 0,0
     // This should set 500,500 to be 0,0
-
-/////////////////////////////////
-    // if (xCoord >=1000){
-    //     xCoord =1000;
-    // }
-    // else if (xCoord<=0){
-    //     xCoord = 0; //.00001;
-    // }
-    // if (yCoord >=1000){
-    //     yCoord =1000;
-    // }
-    // else if (yCoord<=0){
-    //     yCoord = 0; //.00001;
-    // }
-    // xCoord -= 500;
-    // yCoord -= 500;
-    // float quadrantOffset = 0;
-    // if (xCoord > 0){
-    //     if(yCoord <0){
-    //         quadrantOffset=6.28318;
-    //     }
-    // }
-    // else{ // if x is negative
-    //     quadrantOffset = 3.14159;
-    // }
-/////////////////////////////////
 
     x -= 500;
     y -= 500;
 
     if(x == 0 && y == 0 ){
-        nextMajorR = 0;
-        nextMajorTheta = 0;
+        *R = 0;
+        *Theta = 0;
         return;
     }
-    nextMajorR = sqrt( sq(x) + sq(y) );
+    *R = sqrt( sq(x) + sq(y) );
 
     if(x == 0 && 0 < y){
-        nextMajorTheta = PI/2.0;
+        *Theta = PI/2.0;
     }else if(x == 0 && y < 0){
-        nextMajorTheta = PI*3.0/2.0;
+        *Theta = PI*3.0/2.0;
     }else if(x < 0){ //x != 0
-        nextMajorTheta = atan(y/x) + PI;
+        *Theta = atan(y/x) + PI;
     }else if (y < 0){
-        nextMajorTheta = atan(y/x) + 2.0*PI;
+        *Theta = atan(y/x) + 2.0*PI;
     }else{
-        nextMajorTheta = atan(y/x);
+        *Theta = atan(y/x);
     }
-
-
-    // basic math equations for calculating r and theta
-    // hopefully this doesnt take TOO long on an arduino.
-    // I would like to be able to have these calcs on the arduino itself.
-
-    // nextMajorTheta = atan(yCoord/xCoord)+quadrantOffset;
-    // nextMajorR = sqrt( sq(xCoord) + sq(yCoord) );
 }
 
 
@@ -217,7 +189,7 @@ void loop()
                 previousMajorTheta = nextMajorTheta;
                 previousMajorR = nextMajorR;
 
-                CartesianToPolar((float)xCoord,(float)yCoord);
+                CartesianToPolar((float)xCoord,(float)yCoord, &nextMajorR, &nextMajorTheta);
                 Serial.print("R: ");
                 Serial.println(nextMajorR);
                 Serial.print("theta: ");
@@ -236,6 +208,7 @@ void loop()
     case 5: // Go through a set of Major Points.
         
         // Inform me when there
+        // each bool == True when that motor is waiting on a new command
         bool radiusArmReady = (radiusArm.ArmLoop() == 1);
         bool thetaArmReady = (thetaArm.ArmLoop() == 1);
 
@@ -243,16 +216,13 @@ void loop()
         if (radiusArmReady && thetaArmReady){
             // Set majorPointIndex to next variable
             majorPointIndex++;
-            // arrayMajorXs[majorPointIndex]
-            // arrayMajorXs
 
             // Convert Cartesian to Polar
-            // changes this function to receive pointers for where to assign vars
-            CartesianToPolar(arrayMajorXs[majorPointIndex],arrayMajorYs[majorPointIndex],pointerToR, pointerToTheta);
+            CartesianToPolar(arrayMajorXs[majorPointIndex],arrayMajorYs[majorPointIndex],&nextMajorR, &nextMajorTheta);
 
             // Set Next Major Destination
-            radiusArm.SetDestinationAsCalculatedR(pointerToR_DEREFERENCED);
-            thetaArm.SetDestinationAsCalculatedRadians(pointerToTheta_DEREFERENCED);
+            radiusArm.SetDestinationAsCalculatedR(nextMajorR);
+            thetaArm.SetDestinationAsCalculatedRadians(nextMajorTheta);
 
         }
     
