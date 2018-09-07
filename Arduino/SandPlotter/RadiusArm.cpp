@@ -153,7 +153,7 @@ void RadiusArm::SetDestinationAsCalculatedR(float destination)
     // is 0-500 enough...should be since it is going to be a float
 
     destination = destination*fullDistOverRange;
-    Serial.println(destination);
+    // Serial.println(destination);
     SetDestination( (long)destination );
 }
 

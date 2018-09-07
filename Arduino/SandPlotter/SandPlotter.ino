@@ -52,10 +52,32 @@ float nextMajorY = 0.0;
 float lastMajorX = 0.0;
 float lastMajorY = 0.0;
 
+float nextMinorTheta = 0;
+float nextMinorR = 0;
+
+float nextMinorX = 0.0;
+float nextMinorY = 0.0;
+float lastMinorX = 0.0;
+float lastMinorY = 0.0;
+float currentMinorX = 0;
+float currentMinorY = 0;
+float xDeltaBy = 0.0;
+float yDeltaBy = 0.0;
+unsigned int totalMinorPoints = 0;
+unsigned int currentMinorIndex = 0;
+double totalDistance = 0;
+
 double majorPointIndex = -1;
-int majorPointArraySize = 5;
-float arrayMajorXs[] = {500,750, 500, 250, 500};
-float arrayMajorYs[] = {500,500, 750, 500, 250};
+// int majorPointArraySize = 5;
+// float arrayMajorXs[] = {500,750, 500, 250, 500};
+// float arrayMajorYs[] = {500,500, 750, 500, 250};
+// float arrayMajorXs[] = {0,250, 0, -250, 0};
+// float arrayMajorYs[] = {0,0, 250, 0, -250};
+
+int majorPointArraySize = 3;
+float arrayMajorXs[] = {100,100,100};
+float arrayMajorYs[] = {0,250, -250};
+double xAndYOffset = 0; //500;
 
 bool radiusArmReady = false;
 bool thetaArmReady = false;
@@ -86,6 +108,22 @@ void setup()
     thetaArm.Setup();
 }
 
+void findArrayPointsBetweenPoints(float x1,float y1,float x2, float y2){
+    /*
+    Takes in two Major points and calculates the values needed
+    to find all of the major points between them.
+    */
+    float xDistance = x2-x1;
+    float yDistance = y2-y1;
+    totalDistance = sqrt( sq(yDistance)+sq(xDistance) );
+    totalMinorPoints = totalDistance/5;
+    xDeltaBy = xDistance/totalMinorPoints;
+    yDeltaBy = yDistance/totalMinorPoints;
+    nextMinorX = x1;
+    nextMinorY = y1;
+    currentMinorIndex = 0;
+}
+
 void CartesianToPolar(float x,float y, float *R, float *Theta)
 {
     // basic math equations for calculating r and theta
@@ -96,8 +134,9 @@ void CartesianToPolar(float x,float y, float *R, float *Theta)
     // where the top left is 0,0
     // This should set 500,500 to be 0,0
 
-    x -= 500;
-    y -= 500;
+
+    x -= xAndYOffset;
+    y -= xAndYOffset;
 
     if(x == 0 && y == 0 ){
         *R = 0;
@@ -144,7 +183,7 @@ void loop()
         if ( radiusArm.Calibrate_R_Axis() && thetaArm.Calibrate_Theta_Axis() )//need to check if already calibrated
         {
             // state +=1; //1 to go to userinput...2 to cartesian
-            state =5;
+            state =6;
             Serial.println("State Entering `USERINPUT` Mode...");
         }
         break;
@@ -227,6 +266,59 @@ void loop()
             Serial.print(nextMajorR);
             Serial.print(", ");
             Serial.println(nextMajorTheta);
+
+        }
+        break;
+    case 6: // Go through a set of Major Points IN A STRAIGHT LINE.
+        
+        // Inform me when there
+        // each bool == True when that motor is waiting on a new command
+        radiusArmReady = (radiusArm.ArmLoop() == 1);
+        thetaArmReady = (thetaArm.ArmLoop() == 1);
+
+        // If both Motors are already at Destination
+        if (radiusArmReady && thetaArmReady){
+            // if ball is not out of minor points:
+            if (currentMinorIndex <totalMinorPoints){
+                currentMinorIndex++;
+                
+                //calculate next minor point to go to
+                nextMinorX+=xDeltaBy;
+                nextMinorY+=yDeltaBy;
+
+                // Convert Cartesian to Polar
+                CartesianToPolar(nextMinorX,nextMinorY,&nextMajorR, &nextMajorTheta);
+
+                // Set Next Major Destination
+                radiusArm.SetDestinationAsCalculatedR(nextMajorR);
+                thetaArm.SetDestinationAsCalculatedRadians(nextMajorTheta);
+
+            }
+            else{ // if we are ready for the next Major Point
+
+                // Set majorPointIndex to next variable
+                majorPointIndex++;
+                if (majorPointIndex >= majorPointArraySize){
+                    state = 99; //this is nothing
+                    break;
+                }
+                lastMajorX = nextMajorX;
+                lastMajorY = nextMajorY;
+                nextMajorX = arrayMajorXs[(int)majorPointIndex];
+                nextMajorY = arrayMajorYs[(int)majorPointIndex];
+                
+                // Calculate everything for future minor points till next Major
+                findArrayPointsBetweenPoints(lastMajorX,lastMajorY,nextMajorX,nextMajorY);
+
+                // Ball should already be at first point...so no reason to go there.
+
+                Serial.print("NEXT POINT: ");
+                Serial.print(nextMajorX);
+                Serial.print(", ");
+                Serial.println(nextMajorY);
+
+
+            }
 
         }
         break;

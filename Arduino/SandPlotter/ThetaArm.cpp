@@ -139,7 +139,7 @@ void ThetaArm::SetDestinationAsCalculatedRadians(float nextMajorTheta){
     // ....so 0-2π (6.28319 or so)
     //we need to scale this to our totalDistance
     desiredLocation = nextMajorTheta * (float)stepsInRotationOverTwoPi; //*8200)/360;
-    Serial.println(desiredLocation);
+    // Serial.println(desiredLocation);
     armState = GO_TO_POINT;
     stepper.EnableMotor();
 
