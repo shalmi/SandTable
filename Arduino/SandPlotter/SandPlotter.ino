@@ -50,7 +50,7 @@ float previousMajorR = 0;
 float nextMajorX = 0.0;
 float nextMajorY = 0.0;
 float lastMajorX = 0.0;
-float lastMajorY = 0.0;
+float lastMajorY = 0.0; 
 
 float nextMinorTheta = 0;
 float nextMinorR = 0;
@@ -74,9 +74,12 @@ double majorPointIndex = -1;
 // float arrayMajorXs[] = {0,250, 0, -250, 0};
 // float arrayMajorYs[] = {0,0, 250, 0, -250};
 
-int majorPointArraySize = 3;
-float arrayMajorXs[] = {100,100,100};
-float arrayMajorYs[] = {0,250, -250};
+// int majorPointArraySize = 3;
+// float arrayMajorYs[] = {100,100,100};
+// float arrayMajorXs[] = {0,250, -250};
+int majorPointArraySize = 9;
+float arrayMajorYs[] = {100,100,100,100,100,100,100,100,100};
+float arrayMajorXs[] = {0,250, -250,250, -250,250, -250,250, -250};
 double xAndYOffset = 0; //500;
 
 bool radiusArmReady = false;
@@ -116,7 +119,7 @@ void findArrayPointsBetweenPoints(float x1,float y1,float x2, float y2){
     float xDistance = x2-x1;
     float yDistance = y2-y1;
     totalDistance = sqrt( sq(yDistance)+sq(xDistance) );
-    totalMinorPoints = totalDistance/5;
+    totalMinorPoints = totalDistance; //choppy at 5
     xDeltaBy = xDistance/totalMinorPoints;
     yDeltaBy = yDistance/totalMinorPoints;
     nextMinorX = x1;
