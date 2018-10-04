@@ -24,9 +24,15 @@ void ThetaArm::TakeStep(){
     {   
         if (currentDirection) { //if CCW
             currentLocation+=1;
+            if (currentLocation>TheoreticalStepsInRotation){
+                currentLocation = 1;
+            }
         }
         else{ // CW
             currentLocation-=1;
+            if (currentLocation<0){
+                currentLocation = TheoreticalStepsInRotation-1;
+            }
         }
     }
 }
@@ -152,13 +158,37 @@ void ThetaArm::ChangeDirection(bool desiredDirection){
     }
 }
 bool ThetaArm::MoveTowardsDestination(){ //This is not a good function and needs to fix issues with the fact that 361 = 1 etc
-    if(currentLocation<desiredLocation){
-        ChangeDirection(counterClockWise);
+    // if(currentLocation<desiredLocation){
+    //     ChangeDirection(counterClockWise);
+    //     TakeStep();
+    // }
+    // else if (currentLocation>desiredLocation){
+    //     ChangeDirection(clockWise);
+    //     TakeStep(); 
+    // }
+    long diff = currentLocation-desiredLocation;
+    // Serial.print(currentLocation);
+    // Serial.print(", ");
+    // Serial.print(desiredLocation);
+    // Serial.print(", ");
+    // Serial.println(diff);
+    if (diff > 0){
+        if (diff < halfwayPoint){
+            ChangeDirection(clockWise);
+        }
+        else{
+            ChangeDirection(counterClockWise);
+        }
         TakeStep();
     }
-    else if (currentLocation>desiredLocation){
-        ChangeDirection(clockWise);
-        TakeStep(); 
+    else if (diff < 0){
+        if (diff > halfwayPointNegative){
+            ChangeDirection(counterClockWise);
+        }
+        else{
+            ChangeDirection(clockWise);
+        }
+        TakeStep();
     }
     else{
         return true;

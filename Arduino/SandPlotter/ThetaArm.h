@@ -26,7 +26,7 @@ class ThetaArm
 	const bool counterClockWise = true;
 	bool currentDirection = clockWise;
 	long desiredLocation = 0;
-	long currentLocation = 0;
+	long currentLocation = 0; //cant this be an int?
 	long stepCounter = 0;
 	// long fullDistance;
 	const bool HIT = true;
@@ -38,6 +38,8 @@ class ThetaArm
 	int hallEffectCalibrationCounter = 0;
 	long fullDistance = 0;
 	const long TheoreticalStepsInRotation = 8200;
+	long halfwayPoint = TheoreticalStepsInRotation/2;
+	long halfwayPointNegative = TheoreticalStepsInRotation/-2 ;
 	long stepsInRotationOverTwoPi = 0;
 	const float pi = PI;
 	const float dosPI = 2*PI;
