@@ -5,7 +5,8 @@
 
 ThetaArm::ThetaArm(int directionPin, int enablePin, int stepPin, int _hallPin)
 { //For use with normal stepper
-    stepper.Init(directionPin, enablePin, stepPin, 10);
+    mySpeed = 10;
+    stepper.Init(directionPin, enablePin, stepPin, mySpeed);
     hallPin = _hallPin;
     armState = 0;
 }
@@ -45,6 +46,11 @@ bool ThetaArm::OnHallEffect()
     return false;
 }
 
+void ThetaArm::SetSpeed(int speed){
+    mySpeed = speed;
+    stepper.SetSpeed(speed);
+}
+
 // find correct sensor value for hall effect and then return true when at a sensor.
 // also sets the 0 location!
 bool ThetaArm::CalibrateHallEffectSensor() //rewrite to work with hall effect sensor
@@ -53,8 +59,9 @@ bool ThetaArm::CalibrateHallEffectSensor() //rewrite to work with hall effect se
     if(hallEffectCalibrationCounter<testSamples)
     {
         int currentRead = analogRead(hallPin);
-        if ( (currentRead <= 400) && (currentRead != 0))
+        if ( (currentRead <= 1000) && (currentRead > 505) ) //400 on arduino mega 2560. lets say 1000 on huzzah32
         {
+//            Serial.println(currentRead);
             hallEffectCalibrationCounter++;
             if(currentRead < magnetSensedValue)
             {
@@ -128,7 +135,7 @@ bool ThetaArm::Startup()
     }
 }
 void ThetaArm::DisableMotor(){
-    // stepper.DisableMotor();
+    stepper.DisableMotor();
 }
 void ThetaArm::EnableMotor(){
     stepper.EnableMotor();
@@ -204,10 +211,16 @@ byte ThetaArm::ArmLoop(){
             return 1;
             break;
         case GO_TO_POINT:
-            if(MoveTowardsDestination()){
+            if(MoveTowardsDestination()){ //if we made it to our destination
                 DisableMotor();
                 armState = IDLE;
                 return 1;
+            }
+            else{
+              if(mySpeed >20){
+                mySpeed-=1;
+                SetSpeed(mySpeed);
+              }
             }
             break;
     

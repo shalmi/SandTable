@@ -45,6 +45,7 @@ class RadiusArm
 	bool ReverseDirectionOnBump();
 	bool Calibrate_R_Axis();
 	void DisableMotor();
+	void SetSpeed(int speed);
 	void SetDestination(long destination);
 	void SetDestinationAsCalculatedR(float destination);
 	byte ArmLoop();

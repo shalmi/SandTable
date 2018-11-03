@@ -4,6 +4,9 @@
  *  
  */
 
+change to 20k
+also you need to set some sort of pid for time and speed...
+also need to rework 3d model for  theta...like a lot
 
 
 // Michaels Sand Table Starting Up
@@ -24,20 +27,46 @@
 //Add 54 to num
 // static const uint8_t A0 = 54;
 
+
+////////////ARDUINO MEGA//////////////
+// // defines pins numbers
+// const int innerLimit = 14;
+// const int outerLimit = 15;
+// const int pushButton = 14;
+// //RadiusMotorPINS
+// const int rEnable = 56;  //A2
+// const int rStepPin = 60; //A6
+// const int rDirPin = 61;  //A7
+// const int rCsPin = 62; //A8
+// //ThetaMotorPINS
+// const int thetaDirPin = 63;  //A9
+// const int thetaStepPin = 64; //A10
+// const int thetaEnable = 65;  //A11
+// const int thetaHallPin = 66; //THIS IS NOT TRUE....shhhh
+////////////ARDUINO MEGA//////////////
+
+
+
+////////////Feather ESP32//////////////
+// had to make changes to the hall effect sensor in thetaarm.cpp. plus magnet sensed value in thetaarm.h
+//also the pullup resisters dont seem to work for shit at all...WHAT THE FUCK
 // defines pins numbers
-const int innerLimit = 14;
-const int outerLimit = 15;
-const int pushButton = 14;
+const int innerLimit = 39; //this is an analog input A3 and also GPI #39. Note it is not an output-capable pin! It uses ADC #1
+const int outerLimit = 36; //this is an analog input A4 and also GPI #36. Note it is not an output-capable pin! It uses ADC #1
 //RadiusMotorPINS
-const int rEnable = 56;  //A2
-const int rStepPin = 60; //A6
-const int rDirPin = 61;  //A7
-const int rCsPin = 62; //A8
+const int rEnable = 15;  //This is GPIO #15 and also an analog input A8 on ADC #2
+const int rStepPin = 32; //This is GPIO #32 and also an analog input A7 on ADC #1. It can also be used to connect a 32 KHz crystal.
+const int rDirPin = 14;  //This is GPIO #14 and also an analog input A6 on ADC #2
+// const int rCsPin = 62; //A8
 //ThetaMotorPINS
-const int thetaDirPin = 63;  //A9
-const int thetaStepPin = 64; //A10
-const int thetaEnable = 65;  //A11
-const int thetaHallPin = 66; //THIS IS NOT TRUE....shhhh
+const int thetaDirPin = 27;  //This is GPIO #27 and also an analog input A10 on ADC #2
+const int thetaStepPin = 33; //This is GPIO #33 and also an analog input A9 on ADC #1. It can also be used to connect a 32 KHz crystal.
+const int thetaEnable = 21;  //General purpose IO pin #21
+const int thetaHallPin = 34; // this is an analog input A2 and also GPI #34. Note it is not an output-capable pin! It uses ADC #1
+////////////Feather ESP32//////////////
+
+
+
 // const int thetaCsPin = 62; //A8
 // const int stepsForRevolution = 3200;
 
@@ -67,7 +96,7 @@ unsigned int totalMinorPoints = 0;
 unsigned int currentMinorIndex = 0;
 double totalDistance = 0;
 
-double majorPointIndex = -1;
+int majorPointIndex = -1; //this can only handle so many points
 // int majorPointArraySize = 5;
 // float arrayMajorXs[] = {500,750, 500, 250, 500};
 // float arrayMajorYs[] = {500,500, 750, 500, 250};
@@ -78,13 +107,17 @@ double majorPointIndex = -1;
 // float arrayMajorYs[] = {100,100,100};
 // float arrayMajorXs[] = {0,250, -250};
 
-// int majorPointArraySize = 9;
-// float arrayMajorXs[] = {100,100,100,100,100,100,100,100,100};
-// float arrayMajorYs[] = {0,250, -250,250, -250,250, -250,250, -250};
+int majorPointArraySize = 9;
+float arrayMajorXs[] = {100,100,100,100,100,100,100,100,100};
+float arrayMajorYs[] = {0,250, -250,250, -250,250, -250,250, -250};
 
-int majorPointArraySize = 7;
-float arrayMajorXs[] = {100,100,100,-100,-100,100,100};
-float arrayMajorYs[] = {0,100,-100,-100,100,100,0};
+// int majorPointArraySize = 7;
+// float arrayMajorXs[] = {100,100,100,-100,-100,100,100};
+// float arrayMajorYs[] = {0,100,-100,-100,100,100,0};
+
+// int majorPointArraySize = 6;
+// float arrayMajorXs[] = {200,-200,200,-200,200,-200};
+// float arrayMajorYs[] = {0,0,0,0,0,0};
 
 double xAndYOffset = 0; //500;
 
@@ -102,6 +135,8 @@ ThetaArm thetaArm = ThetaArm(thetaDirPin,thetaEnable,thetaStepPin,thetaHallPin);
 
 void setup()
 {
+    digitalWrite(65,HIGH);// disable motor
+    digitalWrite(56,HIGH);// disable motor
     Serial.begin(9600);
     Serial.println("Michaels Sand Table Starting Up");
     //  pinMode(pushButton, INPUT_PULLUP);
@@ -126,12 +161,43 @@ void findArrayPointsBetweenPoints(float x1,float y1,float x2, float y2){
     float yDistance = y2-y1;
     totalDistance = sqrt( sq(yDistance)+sq(xDistance) );
     totalMinorPoints = totalDistance; //choppy at /5
+    // /3 = skips between 48 and 51
+    // /3 = skips between 52 and 55
+    // /2 = skipps between 55 and 60
+    // *1 = 61
+    // *2 = 65
+    // *3 = 67
+    // *4 = 70
+
     xDeltaBy = xDistance/totalMinorPoints;
     yDeltaBy = yDistance/totalMinorPoints;
-    nextMinorX = x1;
-    nextMinorY = y1;
-    currentMinorIndex = 0;
+    nextMinorX = x1+xDeltaBy;
+    nextMinorY = y1+yDeltaBy;
+    currentMinorIndex = 1;
 }
+// I dont think this code works ...it led the end to be in the wrong SandPlotter
+// void findArrayPointsBetweenPoints(float x1,float y1,float x2, float y2){
+//     /*
+//     Takes in two Major points and calculates the values needed
+//     to find all of the major points between them.
+//     */
+//     float xDistance = x2-x1;
+//     float yDistance = y2-y1;
+//     float absXDist  = abs(xDistance);
+//     float absYDist = abs(yDistance);
+//     if (absXDist > absYDist){
+//         totalMinorPoints = absXDist;
+//     }
+//     else{
+//         totalMinorPoints = absYDist;
+//     }
+//     totalMinorPoints=totalMinorPoints;
+//     xDeltaBy = xDistance/totalMinorPoints;
+//     yDeltaBy = yDistance/totalMinorPoints;
+//     nextMinorX = x1;
+//     nextMinorY = y1;
+//     currentMinorIndex = 0;
+// }
 
 void CartesianToPolar(float x,float y, float *R, float *Theta)
 {
@@ -290,6 +356,8 @@ void loop()
             // if ball is not out of minor points:
             if (currentMinorIndex <totalMinorPoints){
                 currentMinorIndex++;
+                radiusArm.SetSpeed(15);
+                thetaArm.SetSpeed(60);
                 
                 //calculate next minor point to go to
                 nextMinorX+=xDeltaBy;
@@ -313,8 +381,8 @@ void loop()
                 }
                 lastMajorX = nextMajorX;
                 lastMajorY = nextMajorY;
-                nextMajorX = arrayMajorXs[(int)majorPointIndex];
-                nextMajorY = arrayMajorYs[(int)majorPointIndex];
+                nextMajorX = arrayMajorXs[majorPointIndex];
+                nextMajorY = arrayMajorYs[majorPointIndex];
                 
                 // Calculate everything for future minor points till next Major
                 findArrayPointsBetweenPoints(lastMajorX,lastMajorY,nextMajorX,nextMajorY);

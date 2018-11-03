@@ -9,7 +9,7 @@
 
 RadiusArm::RadiusArm(int directionPin, int enablePin, int stepPin, int _innerEndStop, int _outerEndStop)
 { //For use with normal stepper
-    stepper.Init(directionPin, enablePin, stepPin, 10); //was 1
+    stepper.Init(directionPin, enablePin, stepPin, 1); //was 1
     innerEndStop = _innerEndStop;
     outerEndStop = _outerEndStop;
     armState = 0;
@@ -145,6 +145,9 @@ void RadiusArm::SetDestination(long destination){
     desiredLocation = destination;
     armState = GO_TO_POINT;
     stepper.EnableMotor();
+}
+void RadiusArm::SetSpeed(int speed){
+    stepper.SetSpeed(speed);
 }
 void RadiusArm::SetDestinationAsCalculatedR(float destination)
 {

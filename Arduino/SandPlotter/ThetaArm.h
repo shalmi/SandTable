@@ -34,8 +34,9 @@ class ThetaArm
 	int hallValue = 512; //set to nothing pretty much
 	bool startupFinished = false;
 	bool calibrationFinished = false;
-	int magnetSensedValue = 500;
+	int magnetSensedValue = 1200; //was 500 on arduino...now it is 1200
 	int hallEffectCalibrationCounter = 0;
+  int mySpeed;
 	long fullDistance = 0;
 	const long TheoreticalStepsInRotation = 8200;
 	long halfwayPoint = TheoreticalStepsInRotation/2;
@@ -52,6 +53,7 @@ class ThetaArm
 	void Setup();
 	bool Startup();
 	bool CalibrateHallEffectSensor();
+  void SetSpeed(int speed);
 	bool Calibrate_Theta_Axis();
 	void DisableMotor();
 	void SetDestination(long destination);
