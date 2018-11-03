@@ -9,7 +9,9 @@ class Stepper
     int enablePin;
     int stepPin;
     unsigned long timeAtNextPulse;
+    unsigned long timeToDisableMotor;
     bool currentlyMidStep = false;
+    bool motorEnabled = false;
 
   public:
     Stepper();
@@ -25,6 +27,7 @@ class Stepper
     void ChangeDirection(bool newDirection);
     void DisableMotor();
     void EnableMotor();
+    void DisableMotorIfBored();
 };
 
 // extern Stepper fan;

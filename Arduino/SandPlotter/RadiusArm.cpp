@@ -9,7 +9,7 @@
 
 RadiusArm::RadiusArm(int directionPin, int enablePin, int stepPin, int _innerEndStop, int _outerEndStop)
 { //For use with normal stepper
-    stepper.Init(directionPin, enablePin, stepPin, 1); //was 1
+    stepper.Init(directionPin, enablePin, stepPin, 3); //was 1
     innerEndStop = _innerEndStop;
     outerEndStop = _outerEndStop;
     armState = 0;
@@ -182,7 +182,7 @@ bool RadiusArm::MoveTowardsDestination(){
 }
 
 byte RadiusArm::ArmLoop(){
-
+    stepper.DisableMotorIfBored();
     switch (armState)
     {
         case IDLE:
@@ -190,7 +190,7 @@ byte RadiusArm::ArmLoop(){
             break;
         case GO_TO_POINT:
             if(MoveTowardsDestination()){
-                stepper.DisableMotor();
+                // stepper.DisableMotor();
                 armState = IDLE;
                 return 1;
             }

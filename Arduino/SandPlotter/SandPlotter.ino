@@ -4,9 +4,9 @@
  *  
  */
 
-change to 20k
-also you need to set some sort of pid for time and speed...
-also need to rework 3d model for  theta...like a lot
+// change to 20k
+// also you need to set some sort of pid for time and speed...
+// also need to rework 3d model for  theta...like a lot
 
 
 // Michaels Sand Table Starting Up
@@ -405,6 +405,7 @@ void loop()
         state = 0;
         Serial.println("Default Catch `state` var in unkown State: " + String(state));
         radiusArm.DisableMotor();
+        thetaArm.DisableMotor();
         while (true)
         {
         } //stop everything here.

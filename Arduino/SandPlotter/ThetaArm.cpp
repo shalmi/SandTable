@@ -204,7 +204,7 @@ bool ThetaArm::MoveTowardsDestination(){ //This is not a good function and needs
 }
 
 byte ThetaArm::ArmLoop(){
-
+    stepper.DisableMotorIfBored();
     switch (armState)
     {
         case IDLE:
@@ -212,7 +212,7 @@ byte ThetaArm::ArmLoop(){
             break;
         case GO_TO_POINT:
             if(MoveTowardsDestination()){ //if we made it to our destination
-                DisableMotor();
+                // DisableMotor();
                 armState = IDLE;
                 return 1;
             }

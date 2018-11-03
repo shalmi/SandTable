@@ -27,6 +27,7 @@ void Stepper::Init(int _directionPin, int _enablePin, int _stepPin, int _speed)
     // EnableMotor();
     DisableMotor();
     timeAtNextPulse = micros() + (speed*50);
+    timeToDisableMotor = micros();
 }
 
 void Stepper::Startup()
@@ -61,7 +62,10 @@ void Stepper::Startup()
 // takes a half step if it is time to half step
 // returns true if a step was taken AND finished, false otherwise
 bool Stepper::OneStepIfTime()
-{
+{   
+    if( ! motorEnabled ){
+        EnableMotor();
+    }
     if(timeAtNextPulse<1000){ //just to deal with not missing steps and rollover for micros()
         delayMicroseconds(1000); //should only happen every 70 hours
     }
@@ -77,11 +81,24 @@ bool Stepper::OneStepIfTime()
         else{
             digitalWrite(stepPin, HIGH);//take first half of step
             currentlyMidStep = true;
-            timeAtNextPulse = micros() + (speed*50);//reset timer
+            unsigned long offset = (speed*50);
+            timeAtNextPulse = micros() + offset;//reset timer //micros+ 1*offset
+            timeToDisableMotor = timeAtNextPulse+offset; //micros +2*offset
         }
     }
     return false; //it's not time for a step you fool (maybe half step)
+}
 
+void Stepper::DisableMotorIfBored() //This function should disable the motor if it has not been used in a while.
+{
+    if(! motorEnabled )
+    {
+        if (micros() >= timeToDisableMotor){
+            DisableMotor();
+            Serial.print("0");
+        }
+    } 
+    
 }
 //deprecated to OneStepIfTime
 // void Stepper::OneStep()
@@ -104,8 +121,11 @@ void Stepper::ChangeDirection(bool newDirection)
 }
 void Stepper::DisableMotor(){
     digitalWrite(enablePin,HIGH);
+    motorEnabled = false;
+    // digitalWrite(enablePin,LOW); //THIS ENABLES THE MOTOR...THIS IS WRONG AND JUST HERE FOR TESTING
 }
 
 void Stepper::EnableMotor(){
     digitalWrite(enablePin,LOW);
+    motorEnabled = true;
 }
