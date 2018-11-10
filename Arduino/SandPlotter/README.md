@@ -2,7 +2,7 @@
 Arduino code to run a homemade sisyphus table
 
 ## TODO:
-- [ ] Disable steppers if unused for more than 2 seconds...heat saving?
+- [x] Disable steppers if unused for more than 2 seconds...heat saving? (not sure how well this works yet...)
 - [x] Test Trinamic Drivers
 - [ ] Get said Drivers to be configurable...and work better
 - [ ] Documentation
