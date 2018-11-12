@@ -14,6 +14,7 @@ Arduino code to run a homemade sisyphus table
 - [x] Get Two steppers working siultaniously...at different HZ
 - [ ] Make a state where Theta Calibrates
 - [x] Make a state where the Theta goes to user input position
+- [ ] Get Table using 2 cores
 
 
 ## Videos of Progress:
