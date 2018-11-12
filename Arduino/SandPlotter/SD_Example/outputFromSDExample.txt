@@ -1,0 +1,66 @@
+ets Jun  8 2016 00:22:57
+
+rst:0x1 (POWERON_RESET),boot:0x17 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:1
+load:0x3fff0018,len:4
+load:0x3fff001c,len:1324
+load:0x40078000,len:7788
+ho 0 tail 12 room 4
+load:0x40080400,len:6448
+entry 0x400806e8
+SD Card Type: SDHC
+SD Card Size: 3920MB
+Listing directory: /
+  DIR : /.Spotlight-V100
+  DIR : /.fseventsd
+  FILE: /test.gcode  SIZE: 129355
+  FILE: /._test.gcode  SIZE: 4096
+  FILE: /test.txt  SIZE: 1048576
+  FILE: /foo.txt  SIZE: 13
+Creating Dir: /mydir
+Dir created
+Listing directory: /
+  DIR : /.Spotlight-V100
+  DIR : /.fseventsd
+  FILE: /test.gcode  SIZE: 129355
+  FILE: /._test.gcode  SIZE: 4096
+  FILE: /test.txt  SIZE: 1048576
+  FILE: /foo.txt  SIZE: 13
+  DIR : /mydir
+Removing Dir: /mydir
+Dir removed
+Listing directory: /
+  DIR : /.Spotlight-V100
+Listing directory: /.Spotlight-V100
+  DIR : /.Spotlight-V100/Store-V2
+Listing directory: /.Spotlight-V100/Store-V2
+  DIR : /.Spotlight-V100/Store-V2/D8B2C610-A0B7-4755-976D-B9960D27B970
+  DIR : /.Spotlight-V100/Store-V1
+Listing directory: /.Spotlight-V100/Store-V1
+  FILE: /.Spotlight-V100/Store-V1/VolumeConfig.plist  SIZE: 348
+  FILE: /.Spotlight-V100/VolumeConfiguration.plist  SIZE: 4156
+  DIR : /.fseventsd
+Listing directory: /.fseventsd
+  FILE: /.fseventsd/fseventsd-uuid  SIZE: 36
+  FILE: /test.gcode  SIZE: 129355
+  FILE: /._test.gcode  SIZE: 4096
+  FILE: /test.txt  SIZE: 1048576
+  FILE: /foo.txt  SIZE: 13
+Writing file: /hello.txt
+File written
+Appending to file: /hello.txt
+Message appended
+Reading file: /hello.txt
+Read from file: Hello World!
+Deleting file: /foo.txt
+File deleted
+Renaming file /hello.txt to /foo.txt
+File renamed
+Reading file: /foo.txt
+Read from file: Hello World!
+1048576 bytes read for 2851 ms
+1048576 bytes written for 9814 ms
+Total space: 3911MB
+Used space: 3MB
