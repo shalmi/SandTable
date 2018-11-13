@@ -8,7 +8,6 @@
 // also you need to set some sort of pid for time and speed...
 // also need to rework 3d model for  theta...like a lot
 
-
 // Michaels Sand Table Starting Up
 // RadiusArm Startup Finished
 // HallEffect Calibration at: 215
@@ -24,9 +23,16 @@
 #include "RadiusArm.h"
 #include "ThetaArm.h"
 
+
+#include "FS.h"
+#include "SD.h"
+#include "SPI.h"
+
+
+// #include "SD_Interface.cpp"
+
 //Add 54 to num
 // static const uint8_t A0 = 54;
-
 
 ////////////ARDUINO MEGA//////////////
 // // defines pins numbers
@@ -44,8 +50,6 @@
 // const int thetaEnable = 65;  //A11
 // const int thetaHallPin = 66; //THIS IS NOT TRUE....shhhh
 ////////////ARDUINO MEGA//////////////
-
-
 
 ////////////Feather ESP32//////////////
 // had to make changes to the hall effect sensor in thetaarm.cpp. plus magnet sensed value in thetaarm.h
@@ -65,8 +69,6 @@ const int thetaEnable = 21;  //General purpose IO pin #21
 const int thetaHallPin = 34; // this is an analog input A2 and also GPI #34. Note it is not an output-capable pin! It uses ADC #1
 ////////////Feather ESP32//////////////
 
-
-
 // const int thetaCsPin = 62; //A8
 // const int stepsForRevolution = 3200;
 
@@ -79,7 +81,7 @@ float previousMajorR = 0;
 float nextMajorX = 0.0;
 float nextMajorY = 0.0;
 float lastMajorX = 0.0;
-float lastMajorY = 0.0; 
+float lastMajorY = 0.0;
 
 float nextMinorTheta = 0;
 float nextMinorR = 0;
@@ -108,8 +110,8 @@ int majorPointIndex = -1; //this can only handle so many points
 // float arrayMajorXs[] = {0,250, -250};
 
 int majorPointArraySize = 9;
-float arrayMajorXs[] = {100,100,100,100,100,100,100,100,100};
-float arrayMajorYs[] = {0,250, -250,250, -250,250, -250,250, -250};
+float arrayMajorXs[] = {100, 100, 100, 100, 100, 100, 100, 100, 100};
+float arrayMajorYs[] = {0, 250, -250, 250, -250, 250, -250, 250, -250};
 
 // int majorPointArraySize = 7;
 // float arrayMajorXs[] = {100,100,100,-100,-100,100,100};
@@ -125,7 +127,7 @@ bool radiusArmReady = false;
 bool thetaArmReady = false;
 
 RadiusArm radiusArm = RadiusArm(rDirPin, rEnable, rStepPin, innerLimit, outerLimit); //Works for Normal Driver
-ThetaArm thetaArm = ThetaArm(thetaDirPin,thetaEnable,thetaStepPin,thetaHallPin);
+ThetaArm thetaArm = ThetaArm(thetaDirPin, thetaEnable, thetaStepPin, thetaHallPin);
 // RadiusArm radiusArm = RadiusArm(rDirPin, rEnable, rStepPin, innerLimit, outerLimit, rCsPin); //For TMC2130
 
 // Stepper theta_stepper = Stepper(rDirPin,rEnable,rStepPin);
@@ -133,11 +135,26 @@ ThetaArm thetaArm = ThetaArm(thetaDirPin,thetaEnable,thetaStepPin,thetaHallPin);
 // #include <TMC2130Stepper.h>
 // TMC2130Stepper TMC2130 = TMC2130Stepper(rEnable, rDirPin, rStepPin, rCsPin);
 
+TaskHandle_t Task1; //This is the Core Zero Task
+
 void setup()
 {
-    digitalWrite(65,HIGH);// disable motor
-    digitalWrite(56,HIGH);// disable motor
-    Serial.begin(9600);
+    digitalWrite(65, HIGH); // disable motor
+    digitalWrite(56, HIGH); // disable motor
+    Serial.begin(115200);
+
+    //start other Convert
+    xTaskCreatePinnedToCore(
+        mainLoopForCoreZero,
+        "nameOfCoreZeroTaskMaybe",
+        10000,
+        NULL,
+        1,
+        &Task1,
+        0);
+
+    delay(1000); // needed to start-up task 1
+
     Serial.println("Michaels Sand Table Starting Up");
     //  pinMode(pushButton, INPUT_PULLUP);
 
@@ -152,14 +169,15 @@ void setup()
     thetaArm.Setup();
 }
 
-void findArrayPointsBetweenPoints(float x1,float y1,float x2, float y2){
+void findArrayPointsBetweenPoints(float x1, float y1, float x2, float y2)
+{
     /*
     Takes in two Major points and calculates the values needed
     to find all of the major points between them.
     */
-    float xDistance = x2-x1;
-    float yDistance = y2-y1;
-    totalDistance = sqrt( sq(yDistance)+sq(xDistance) );
+    float xDistance = x2 - x1;
+    float yDistance = y2 - y1;
+    totalDistance = sqrt(sq(yDistance) + sq(xDistance));
     totalMinorPoints = totalDistance; //choppy at /5
     // /3 = skips between 48 and 51
     // /3 = skips between 52 and 55
@@ -169,10 +187,10 @@ void findArrayPointsBetweenPoints(float x1,float y1,float x2, float y2){
     // *3 = 67
     // *4 = 70
 
-    xDeltaBy = xDistance/totalMinorPoints;
-    yDeltaBy = yDistance/totalMinorPoints;
-    nextMinorX = x1+xDeltaBy;
-    nextMinorY = y1+yDeltaBy;
+    xDeltaBy = xDistance / totalMinorPoints;
+    yDeltaBy = yDistance / totalMinorPoints;
+    nextMinorX = x1 + xDeltaBy;
+    nextMinorY = y1 + yDeltaBy;
     currentMinorIndex = 1;
 }
 // I dont think this code works ...it led the end to be in the wrong SandPlotter
@@ -199,7 +217,7 @@ void findArrayPointsBetweenPoints(float x1,float y1,float x2, float y2){
 //     currentMinorIndex = 0;
 // }
 
-void CartesianToPolar(float x,float y, float *R, float *Theta)
+void CartesianToPolar(float x, float y, float *R, float *Theta)
 {
     // basic math equations for calculating r and theta
     // hopefully this doesnt take TOO long on an arduino.
@@ -209,45 +227,54 @@ void CartesianToPolar(float x,float y, float *R, float *Theta)
     // where the top left is 0,0
     // This should set 500,500 to be 0,0
 
-
     x -= xAndYOffset;
     y -= xAndYOffset;
 
-    if(x == 0 && y == 0 ){
+    if (x == 0 && y == 0)
+    {
         *R = 0;
         *Theta = 0;
         return;
     }
-    *R = sqrt( sq(x) + sq(y) );
+    *R = sqrt(sq(x) + sq(y));
 
-    if(x == 0 && 0 < y){
-        *Theta = PI/2.0;
-    }else if(x == 0 && y < 0){
-        *Theta = PI*3.0/2.0;
-    }else if(x < 0){ //x != 0
-        *Theta = atan(y/x) + PI;
-    }else if (y < 0){
-        *Theta = atan(y/x) + 2.0*PI;
-    }else{
-        *Theta = atan(y/x);
+    if (x == 0 && 0 < y)
+    {
+        *Theta = PI / 2.0;
+    }
+    else if (x == 0 && y < 0)
+    {
+        *Theta = PI * 3.0 / 2.0;
+    }
+    else if (x < 0)
+    { //x != 0
+        *Theta = atan(y / x) + PI;
+    }
+    else if (y < 0)
+    {
+        *Theta = atan(y / x) + 2.0 * PI;
+    }
+    else
+    {
+        *Theta = atan(y / x);
     }
 }
 
-
 void loop()
-{   
+{
+    // Serial.println("main loop still running!");
     // state = 17;
     switch (state)
     {
-    // case 17:
-    //     radiusArm.Startup();
-    //     thetaArm.Startup();
+        // case 17:
+        //     radiusArm.Startup();
+        //     thetaArm.Startup();
         break;
     case DELAYONBOOT:
         // delay(1000);
         state++;
     case STARTUP:
-        if (radiusArm.Startup() && thetaArm.Startup() )
+        if (radiusArm.Startup() && thetaArm.Startup())
         {               //radiusArm has hit a limitSwitch and thetaArmFound a Sensor
             state += 1; //move on to calibration
             Serial.println("State Entering `CALIBRATION` Mode...");
@@ -255,10 +282,10 @@ void loop()
         break;
 
     case CALIBRATION:
-        if ( radiusArm.Calibrate_R_Axis() && thetaArm.Calibrate_Theta_Axis() )//need to check if already calibrated
+        if (radiusArm.Calibrate_R_Axis() && thetaArm.Calibrate_Theta_Axis()) //need to check if already calibrated
         {
             // state +=1; //1 to go to userinput...2 to cartesian
-            state =6;
+            state = 6;
             Serial.println("State Entering `USERINPUT` Mode...");
         }
         break;
@@ -303,14 +330,13 @@ void loop()
                 previousMajorTheta = nextMajorTheta;
                 previousMajorR = nextMajorR;
 
-                CartesianToPolar((float)xCoord,(float)yCoord, &nextMajorR, &nextMajorTheta);
+                CartesianToPolar((float)xCoord, (float)yCoord, &nextMajorR, &nextMajorTheta);
                 Serial.print("R: ");
                 Serial.println(nextMajorR);
                 Serial.print("theta: ");
                 Serial.println(nextMajorTheta);
                 radiusArm.SetDestinationAsCalculatedR(nextMajorR);
                 thetaArm.SetDestinationAsCalculatedRadians(nextMajorTheta);
-
 
                 // radiusArm.SetDestination((long)steps);
                 // thetaArm.SetDestination((long)secondSteps);
@@ -320,19 +346,20 @@ void loop()
         thetaArm.ArmLoop();
         break;
     case 5: // Go through a set of Major Points.
-        
+
         // Inform me when there
         // each bool == True when that motor is waiting on a new command
         radiusArmReady = (radiusArm.ArmLoop() == 1);
         thetaArmReady = (thetaArm.ArmLoop() == 1);
 
         // If both Motors are already at Destination
-        if (radiusArmReady && thetaArmReady){
+        if (radiusArmReady && thetaArmReady)
+        {
             // Set majorPointIndex to next variable
             majorPointIndex++;
 
             // Convert Cartesian to Polar
-            CartesianToPolar(arrayMajorXs[(int)majorPointIndex],arrayMajorYs[(int)majorPointIndex],&nextMajorR, &nextMajorTheta);
+            CartesianToPolar(arrayMajorXs[(int)majorPointIndex], arrayMajorYs[(int)majorPointIndex], &nextMajorR, &nextMajorTheta);
 
             // Set Next Major Destination
             radiusArm.SetDestinationAsCalculatedR(nextMajorR);
@@ -341,41 +368,43 @@ void loop()
             Serial.print(nextMajorR);
             Serial.print(", ");
             Serial.println(nextMajorTheta);
-
         }
         break;
     case 6: // Go through a set of Major Points IN A STRAIGHT LINE.
-        
+
         // Inform me when there
         // each bool == True when that motor is waiting on a new command
         radiusArmReady = (radiusArm.ArmLoop() == 1);
         thetaArmReady = (thetaArm.ArmLoop() == 1);
 
         // If both Motors are already at Destination
-        if (radiusArmReady && thetaArmReady){
+        if (radiusArmReady && thetaArmReady)
+        {
             // if ball is not out of minor points:
-            if (currentMinorIndex <totalMinorPoints){
+            if (currentMinorIndex < totalMinorPoints)
+            {
                 currentMinorIndex++;
                 radiusArm.SetSpeed(15);
                 thetaArm.SetSpeed(60);
-                
+
                 //calculate next minor point to go to
-                nextMinorX+=xDeltaBy;
-                nextMinorY+=yDeltaBy;
+                nextMinorX += xDeltaBy;
+                nextMinorY += yDeltaBy;
 
                 // Convert Cartesian to Polar
-                CartesianToPolar(nextMinorX,nextMinorY,&nextMajorR, &nextMajorTheta);
+                CartesianToPolar(nextMinorX, nextMinorY, &nextMajorR, &nextMajorTheta);
 
                 // Set Next Major Destination
                 radiusArm.SetDestinationAsCalculatedR(nextMajorR);
                 thetaArm.SetDestinationAsCalculatedRadians(nextMajorTheta);
-
             }
-            else{ // if we are ready for the next Major Point
+            else
+            { // if we are ready for the next Major Point
 
                 // Set majorPointIndex to next variable
                 majorPointIndex++;
-                if (majorPointIndex >= majorPointArraySize){
+                if (majorPointIndex >= majorPointArraySize)
+                {
                     state = 99; //this is nothing
                     break;
                 }
@@ -383,9 +412,9 @@ void loop()
                 lastMajorY = nextMajorY;
                 nextMajorX = arrayMajorXs[majorPointIndex];
                 nextMajorY = arrayMajorYs[majorPointIndex];
-                
+
                 // Calculate everything for future minor points till next Major
-                findArrayPointsBetweenPoints(lastMajorX,lastMajorY,nextMajorX,nextMajorY);
+                findArrayPointsBetweenPoints(lastMajorX, lastMajorY, nextMajorX, nextMajorY);
 
                 // Ball should already be at first point...so no reason to go there.
 
@@ -393,13 +422,9 @@ void loop()
                 Serial.print(nextMajorX);
                 Serial.print(", ");
                 Serial.println(nextMajorY);
-
-
             }
-
         }
         break;
-    
 
     default:
         state = 0;
@@ -413,3 +438,306 @@ void loop()
     } //switch on state
 
 } //loop
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Code for Core Zero~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+String gCodeFiles[10] = {"NONE", "NONE", "NONE", "NONE", "NONE", "NONE", "NONE", "NONE", "NONE", "NONE"};
+byte gCodeFileNumber = 0;
+byte gCodeFilesTotal = 0;
+const int bSize = 25;
+char Buffer[bSize];
+
+void listDir(fs::FS &fs, const char *dirname, uint8_t levels)
+{
+    Serial.printf("Listing directory: %s\n", dirname);
+
+    File root = fs.open(dirname);
+    if (!root)
+    {
+        Serial.println("Failed to open directory");
+        return;
+    }
+    if (!root.isDirectory())
+    {
+        Serial.println("Not a directory");
+        return;
+    }
+
+    File file = root.openNextFile();
+    while (file)
+    {
+        if (file.isDirectory())
+        {
+            Serial.print("  DIR : ");
+            Serial.println(file.name());
+            if (levels)
+            {
+                listDir(fs, file.name(), levels - 1);
+            }
+        }
+        else
+        {
+            Serial.print("  FILE: ");
+            Serial.print(file.name());
+            Serial.print("  SIZE: ");
+            Serial.println(file.size());
+        }
+        file = root.openNextFile();
+    }
+}
+
+void listGCodeFiles(fs::FS &fs)
+{
+    const char *dirname = "/";
+    uint8_t levels = 0;
+    //    Serial.printf("Listing directory: %s\n", dirname);
+    File root = fs.open(dirname);
+    if (!root)
+    {
+        Serial.println("Failed to open directory");
+        return;
+    }
+    File file = root.openNextFile();
+    while (file)
+    {
+        if (!file.isDirectory())
+        { // if This is a file and NOT a directory
+            String fileName = file.name();
+            if (fileName.indexOf("/._") < 0)
+            { //ignore all Mac ._blah.ext files
+                if (fileName.indexOf(".gcode") > 0)
+                { // but still grab the rest of the gcode files
+                    gCodeFiles[gCodeFileNumber] = fileName;
+                    gCodeFileNumber++;
+                    //                Serial.print("  FILE: ");
+                    //                Serial.print(file.name());
+                    //                Serial.print("  SIZE: ");
+                    //                Serial.println(file.size());
+                }
+            }
+        }
+        file = root.openNextFile();
+    }
+}
+
+void readFile(fs::FS &fs, const char *path)
+{
+    Serial.printf("Reading file: %s\n", path);
+
+    File file = fs.open(path);
+    if (!file)
+    {
+        Serial.println("Failed to open file for reading");
+        return;
+    }
+
+    Serial.print("Read from file: ");
+    while (file.available())
+    {
+        Serial.write(file.read());
+    }
+    file.close();
+}
+
+File myFile;
+
+String readLine()
+{
+    //    Serial.printf("Reading One line from file");
+    int bytesRead = 0;
+    while (myFile.available() && (bytesRead == 0))
+    {
+        //      for(int a = 0; a<3;a++){
+        bytesRead = myFile.readBytesUntil('\n', Buffer, bSize);
+        //        Serial.print("Bytes read:");
+        //        Serial.println(bytesRead);
+        //        Serial.println(Buffer);
+        //     }
+    }
+    if (bytesRead > 0)
+    {
+        return Buffer;
+    }
+    else
+    { //end of file. nothing was read
+        return "";
+    }
+}
+
+bool openFile(fs::FS &fs, const char *path)
+{
+    //  Opening File on SD Card
+    myFile = fs.open(path);
+    if (!myFile)
+    {
+        Serial.println("Failed to open file for reading");
+        return false;
+    }
+    //else
+    return true;
+}
+void closeFile()
+{
+    myFile.close();
+}
+
+void gCodeToXandY(String gCodeString)
+{
+
+    if (gCodeString.startsWith("G01 "))
+    {
+        Serial.println(gCodeString);
+        gCodeString.remove(0, 4); // Remove six characters starting at index=2, "G01 "
+        char *str = new char[gCodeString.length() + 1];
+        strcpy(str, gCodeString.c_str());
+        char *pch;
+        pch = strtok(str, " XY");
+        float inputs[2];
+        int index = 0;
+        while (pch != NULL)
+        {
+            //      Serial.println(pch);
+            inputs[index] = strtof(pch, NULL);
+            index++;
+            if (index > 2)
+            {
+                Serial.println("THERE HAS BEEN AN ERROR");
+                while (1)
+                {
+                    int x = 3;
+                }
+            }
+            pch = strtok(NULL, " XY");
+        }
+        //print the x and y values
+        for (int x = 0; x < 2; x++)
+        {
+            Serial.println(inputs[x]);
+        }
+    }
+}
+
+// void setup()
+// {
+//     Serial.begin(115200);
+//     Serial.println("");
+//     if (!SD.begin(A5))
+//     {
+//         Serial.println("Card Mount Failed");
+//         return;
+//     }
+
+//     listGCodeFiles(SD);
+
+    // //    openFile(SD, "/test.gcode");
+    // //    readLine();
+    // //    readLine();
+    // //    readLine();
+    // //    readLine();
+    // //    closeFile();
+
+    // Serial.println("\nNames of gCode Files");
+    // Serial.println("Followed by 3 lines from that file");
+    // gCodeFilesTotal = gCodeFileNumber;
+    // for (int i = 0; i < gCodeFilesTotal; i++)
+    // {
+    //     Serial.println(gCodeFiles[i]);
+    //     openFile(SD, gCodeFiles[i].c_str()); // converts string to const char* ?
+    //     gCodeToXandY(readLine());
+    //     gCodeToXandY(readLine());
+    //     gCodeToXandY(readLine());
+    //     closeFile();
+    // }
+    // gCodeFileNumber = 0;
+// }
+
+// void loop()
+// {
+// }
+
+void mainLoopForCoreZero(void *parameter)
+{
+
+    int apple = 1;
+    // int apple = bSize;
+
+    // if (!SD.begin(A5))
+    // {
+    //     Serial.println("Card Mount Failed");
+    //     return;
+    // }
+
+    // listGCodeFiles(SD);
+
+    // Serial.println("\nNames of gCode Files");
+    // Serial.println("Followed by 3 lines from that file");
+    // gCodeFilesTotal = gCodeFileNumber;
+    // for (int i = 0; i < gCodeFilesTotal; i++)
+    // {
+    //     Serial.println(gCodeFiles[i]);
+    //     openFile(SD, gCodeFiles[i].c_str()); // converts string to const char* ?
+    //     gCodeToXandY(readLine());
+    //     gCodeToXandY(readLine());
+    //     gCodeToXandY(readLine());
+    //     closeFile();
+    // }
+    // gCodeFileNumber = 0;
+
+
+    //Runs on Task 0
+    for (;;)
+    {
+        // Serial.println("Hello");
+    delay(1000);
+        // Serial.println(apple);
+        // delay(1000);
+
+            if (!SD.begin(A5))
+    {
+        Serial.println("Card Mount Failed");
+        return;
+    }
+
+    listGCodeFiles(SD);
+
+    Serial.println("\nNames of gCode Files");
+    Serial.println("Followed by 3 lines from that file");
+    gCodeFilesTotal = gCodeFileNumber;
+    for (int i = 0; i < gCodeFilesTotal; i++)
+    {
+        Serial.println(gCodeFiles[i]);
+        openFile(SD, gCodeFiles[i].c_str()); // converts string to const char* ?
+        gCodeToXandY(readLine());
+        gCodeToXandY(readLine());
+        gCodeToXandY(readLine());
+        closeFile();
+    }
+    gCodeFileNumber = 0;
+
+
+
+    }
+}
