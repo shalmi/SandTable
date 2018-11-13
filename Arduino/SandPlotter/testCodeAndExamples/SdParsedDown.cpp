@@ -66,7 +66,7 @@ void listGCodeFiles(fs::FS &fs)
 {
     const char *dirname = "/";
     uint8_t levels = 0;
-//    Serial.printf("Listing directory: %s\n", dirname);
+    //    Serial.printf("Listing directory: %s\n", dirname);
     File root = fs.open(dirname);
     if (!root)
     {
@@ -119,25 +119,25 @@ File myFile;
 
 String readLine()
 {
-//    Serial.printf("Reading One line from file");
-  int bytesRead = 0;
-    while (myFile.available() && (bytesRead == 0) )
+    //    Serial.printf("Reading One line from file");
+    int bytesRead = 0;
+    while (myFile.available() && (bytesRead == 0))
     {
-//      for(int a = 0; a<3;a++){
+        //      for(int a = 0; a<3;a++){
         bytesRead = myFile.readBytesUntil('\n', Buffer, bSize);
-//        Serial.print("Bytes read:");
-//        Serial.println(bytesRead);
-//        Serial.println(Buffer);
-//     }
+        //        Serial.print("Bytes read:");
+        //        Serial.println(bytesRead);
+        //        Serial.println(Buffer);
+        //     }
     }
-    if (bytesRead > 0) 
-      {
+    if (bytesRead > 0)
+    {
         return Buffer;
-      }
+    }
     else
-      {//end of file. nothing was read
-       return "";
-      }
+    { //end of file. nothing was read
+        return "";
+    }
 }
 
 bool openFile(fs::FS &fs, const char *path)
@@ -151,18 +151,46 @@ bool openFile(fs::FS &fs, const char *path)
     }
     //else
     return true;
-    
 }
 void closeFile()
 {
-  myFile.close();
+    myFile.close();
 }
 
-void gCodeToXandY(String gCodeString){
-  
-  if (gCodeString.startsWith("G01") ){
-    Serial.println(gCodeString);
-  }
+void gCodeToXandY(String gCodeString)
+{
+
+    if (gCodeString.startsWith("G01 "))
+    {
+        Serial.println(gCodeString);
+        gCodeString.remove(0, 4); // Remove six characters starting at index=2, "G01 "
+        char *str = new char[gCodeString.length() + 1];
+        strcpy(str, gCodeString.c_str());
+        char *pch;
+        pch = strtok(str, " XY");
+        float inputs[2];
+        int index = 0;
+        while (pch != NULL)
+        {
+            //      Serial.println(pch);
+            inputs[index] = strtof(pch, NULL);
+            index++;
+            if (index > 2)
+            {
+                Serial.println("THERE HAS BEEN AN ERROR");
+                while (1)
+                {
+                    int x = 3;
+                }
+            }
+            pch = strtok(NULL, " XY");
+        }
+        //print the x and y values
+        for (int x = 0; x < 2; x++)
+        {
+            Serial.println(inputs[x]);
+        }
+    }
 }
 
 void setup()
@@ -175,15 +203,14 @@ void setup()
         return;
     }
 
-    listGCodeFiles(SD);    
-    
-//    openFile(SD, "/test.gcode");
-//    readLine();
-//    readLine();
-//    readLine();
-//    readLine();
-//    closeFile();
+    listGCodeFiles(SD);
 
+    //    openFile(SD, "/test.gcode");
+    //    readLine();
+    //    readLine();
+    //    readLine();
+    //    readLine();
+    //    closeFile();
 
     Serial.println("\nNames of gCode Files");
     Serial.println("Followed by 3 lines from that file");
@@ -194,7 +221,7 @@ void setup()
         openFile(SD, gCodeFiles[i].c_str()); // converts string to const char* ?
         gCodeToXandY(readLine());
         gCodeToXandY(readLine());
-        gCodeToXandY(readLine()); 
+        gCodeToXandY(readLine());
         closeFile();
     }
     gCodeFileNumber = 0;
