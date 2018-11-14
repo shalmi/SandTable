@@ -21,6 +21,11 @@
 // include queue library header.
 #include "QueueList.h"
 
+struct gCodeStruct {
+  float x;
+  float y;
+} ;// pointOne, pointTwo;
+
 // globals
 String gCodeFiles[10] = {"NONE", "NONE", "NONE", "NONE", "NONE", "NONE", "NONE", "NONE", "NONE", "NONE"};
 byte gCodeFileNumber = 0;
@@ -162,9 +167,9 @@ void closeFile()
     myFile.close();
 }
 
-void gCodeToXandY(String gCodeString)
+gCodeStruct gCodeToXandY(String gCodeString)
 {
-
+    
     if (gCodeString.startsWith("G01 "))
     {
         Serial.println(gCodeString);
@@ -190,12 +195,17 @@ void gCodeToXandY(String gCodeString)
             }
             pch = strtok(NULL, " XY");
         }
-        //print the x and y values
-        for (int x = 0; x < 2; x++)
-        {
-            Serial.println(inputs[x]);
-        }
+        gCodeStruct returnPoint = { .x = inputs[0], .y = inputs[1] };
+        return returnPoint;
+
+        // //print the x and y values
+        // for (int x = 0; x < 2; x++)
+        // {
+        //     Serial.println(inputs[x]);
+        // }
     }
+    gCodeStruct returnPoint = { .x = -1, .y = -1 };
+    return returnPoint;
 }
 
 // void setup()
@@ -240,18 +250,33 @@ void gCodeToXandY(String gCodeString)
 String msgA = "Happy Hacking!";
 String msgB = "Hacking Happy!";
 
+
+
+
 // create a queue of strings messages.
-QueueList<String> queue;
+QueueList<gCodeStruct> queue;
+// QueueList<String> queue;
+
+
 
 void otherCoreLoop()
 {
+    // gCodeStruct pointOne;
+    // gCodeStruct pointTwo;
+    // gCodeStruct pointOne.x = 1.2;
+    // gCodeStruct pointOne.y = 1.5;
+    // gCodeStruct pointTwo.x = 7.2;
+    // gCodeStruct pointTwo.y = 7.5;
+    // gCodeStruct pointOne = { .x = 1.0, .y = 2.0 };
+    // gCodeStruct pointTwo = { .x = 3.0, .y = 4.0 };
 
     // set the printer of the queue.
     queue.setPrinter(Serial);
 
     // push all the string messages to the queue.
-    queue.push(msgA);
-    queue.push(msgB);
+
+    // queue.push(pointOne);
+    // queue.push(pointTwo);
 
     int apple = 1;
     // int apple = bSize;
@@ -271,9 +296,9 @@ void otherCoreLoop()
     {
         Serial.println(gCodeFiles[i]);
         openFile(SD, gCodeFiles[i].c_str()); // converts string to const char* ?
-        gCodeToXandY(readLine());
-        gCodeToXandY(readLine());
-        gCodeToXandY(readLine());
+        queue.push(gCodeToXandY(readLine()));
+        queue.push(gCodeToXandY(readLine()));
+        queue.push(gCodeToXandY(readLine()));
         closeFile();
     }
     gCodeFileNumber = 0;

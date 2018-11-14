@@ -261,8 +261,13 @@ void CartesianToPolar(float x, float y, float *R, float *Theta)
 void loop()
 {
     // pop all the string messages from the queue.
-    while (!queue.isEmpty())
-        Serial.println(queue.pop());
+    while (!queue.isEmpty()){
+        gCodeStruct coord = queue.pop();
+        Serial.print("\nX: ");
+        Serial.print(coord.x);
+        Serial.print(",Y: ");
+        Serial.print(coord.y);
+}
 
     // Serial.println("main loop still running!");
     // state = 17;
