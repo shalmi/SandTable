@@ -21,10 +21,11 @@
 // include queue library header.
 #include "QueueList.h"
 
-struct gCodeStruct {
-  float x;
-  float y;
-} ;// pointOne, pointTwo;
+struct gCodeStruct
+{
+    float x;
+    float y;
+}; // pointOne, pointTwo;
 
 // globals
 String gCodeFiles[10] = {"NONE", "NONE", "NONE", "NONE", "NONE", "NONE", "NONE", "NONE", "NONE", "NONE"};
@@ -32,6 +33,7 @@ byte gCodeFileNumber = 0;
 byte gCodeFilesTotal = 0;
 const int bSize = 25;
 char Buffer[bSize];
+bool fileEndFound = false;
 
 void listDir(fs::FS &fs, const char *dirname, uint8_t levels)
 {
@@ -74,6 +76,7 @@ void listDir(fs::FS &fs, const char *dirname, uint8_t levels)
 
 void listGCodeFiles(fs::FS &fs)
 {
+    gCodeFileNumber = 0;
     const char *dirname = "/";
     uint8_t levels = 0;
     //    Serial.printf("Listing directory: %s\n", dirname);
@@ -169,7 +172,7 @@ void closeFile()
 
 gCodeStruct gCodeToXandY(String gCodeString)
 {
-    
+
     if (gCodeString.startsWith("G01 "))
     {
         Serial.println(gCodeString);
@@ -195,7 +198,7 @@ gCodeStruct gCodeToXandY(String gCodeString)
             }
             pch = strtok(NULL, " XY");
         }
-        gCodeStruct returnPoint = { .x = inputs[0], .y = inputs[1] };
+        gCodeStruct returnPoint = {.x = inputs[0], .y = inputs[1]};
         return returnPoint;
 
         // //print the x and y values
@@ -204,115 +207,68 @@ gCodeStruct gCodeToXandY(String gCodeString)
         //     Serial.println(inputs[x]);
         // }
     }
-    gCodeStruct returnPoint = { .x = -1, .y = -1 };
+    fileEndFound = true;
+    gCodeStruct returnPoint = {.x = -1, .y = -1};
     return returnPoint;
 }
-
-// void setup()
-// {
-//     Serial.begin(115200);
-//     Serial.println("");
-//     if (!SD.begin(A5))
-//     {
-//         Serial.println("Card Mount Failed");
-//         return;
-//     }
-
-//     listGCodeFiles(SD);
-
-// //    openFile(SD, "/test.gcode");
-// //    readLine();
-// //    readLine();
-// //    readLine();
-// //    readLine();
-// //    closeFile();
-
-// Serial.println("\nNames of gCode Files");
-// Serial.println("Followed by 3 lines from that file");
-// gCodeFilesTotal = gCodeFileNumber;
-// for (int i = 0; i < gCodeFilesTotal; i++)
-// {
-//     Serial.println(gCodeFiles[i]);
-//     openFile(SD, gCodeFiles[i].c_str()); // converts string to const char* ?
-//     gCodeToXandY(readLine());
-//     gCodeToXandY(readLine());
-//     gCodeToXandY(readLine());
-//     closeFile();
-// }
-// gCodeFileNumber = 0;
-// }
-
-// void loop()
-// {
-// }
-
-// declare string messages.
-String msgA = "Happy Hacking!";
-String msgB = "Hacking Happy!";
-
-
 
 
 // create a queue of strings messages.
 QueueList<gCodeStruct> queue;
 // QueueList<String> queue;
 
-
+double numsPushed = 0;
 
 void otherCoreLoop()
 {
-    // gCodeStruct pointOne;
-    // gCodeStruct pointTwo;
-    // gCodeStruct pointOne.x = 1.2;
-    // gCodeStruct pointOne.y = 1.5;
-    // gCodeStruct pointTwo.x = 7.2;
-    // gCodeStruct pointTwo.y = 7.5;
-    // gCodeStruct pointOne = { .x = 1.0, .y = 2.0 };
-    // gCodeStruct pointTwo = { .x = 3.0, .y = 4.0 };
+
 
     // set the printer of the queue.
     queue.setPrinter(Serial);
-
-    // push all the string messages to the queue.
-
-    // queue.push(pointOne);
-    // queue.push(pointTwo);
-
-    int apple = 1;
-    // int apple = bSize;
 
     if (!SD.begin(A5))
     {
         Serial.println("Card Mount Failed");
         return;
     }
-
     listGCodeFiles(SD);
-
-    Serial.println("\nNames of gCode Files");
-    Serial.println("Followed by 3 lines from that file");
     gCodeFilesTotal = gCodeFileNumber;
-    for (int i = 0; i < gCodeFilesTotal; i++)
-    {
-        Serial.println(gCodeFiles[i]);
-        openFile(SD, gCodeFiles[i].c_str()); // converts string to const char* ?
-        queue.push(gCodeToXandY(readLine()));
-        queue.push(gCodeToXandY(readLine()));
-        queue.push(gCodeToXandY(readLine()));
-        closeFile();
-    }
-    gCodeFileNumber = 0;
-
     //Runs on Task 0
     for (;;)
     {
-        // Serial.println("Hello");
-        delay(1000);
-        // Serial.println(apple);
-        // delay(1000);
-
-        // // pop all the string messages from the queue.
-        // while (!queue.isEmpty())
-        //     Serial.println(queue.pop());
+        Serial.println("\nBeginning Of Secondary Loop");
+        
+        for (int i = 0; i < gCodeFilesTotal; i++) // For each gCodeFile
+        {
+            numsPushed = 0;
+            Serial.println(gCodeFiles[i]); // Print the name of the File
+            openFile(SD, gCodeFiles[i].c_str()); // converts string to const char* ?
+            bool moreToFile = true;
+            myFile.seek(0); // Move to begining of file incase we are re reading old Files.
+            fileEndFound = false;
+            while (moreToFile)
+            {
+                if (queue.count() < 30)
+                {
+                    // if(myFile.available()){ // This check doesnt seem to currently work...
+                    gCodeStruct pushMe = gCodeToXandY(readLine());
+                    if (fileEndFound)
+                    {
+                        moreToFile = false;
+                        closeFile();
+                    }
+                    else{
+                        queue.push(pushMe);
+                        numsPushed++;
+                    }
+                    
+                }
+                delay(1);
+            }
+        }
+        while(true){ //sit here forever when it is all done.
+            int j=3;
+            delay(5000);
+        }
     }
 }

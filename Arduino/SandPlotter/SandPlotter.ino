@@ -257,17 +257,23 @@ void CartesianToPolar(float x, float y, float *R, float *Theta)
         *Theta = atan(y / x);
     }
 }
-
+double pointsRead = 0;
 void loop()
 {
     // pop all the string messages from the queue.
-    while (!queue.isEmpty()){
+    if (!queue.isEmpty()){
+        pointsRead++;
         gCodeStruct coord = queue.pop();
-        Serial.print("\nX: ");
+        Serial.print("\nPoint: ");
+        Serial.print(pointsRead);
+        Serial.print(", X: ");
         Serial.print(coord.x);
         Serial.print(",Y: ");
         Serial.print(coord.y);
-}
+        Serial.print(", numsPushed: ");
+        Serial.print(numsPushed);
+    }
+    delay(1);
 
     // Serial.println("main loop still running!");
     // state = 17;
