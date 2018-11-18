@@ -260,20 +260,20 @@ void CartesianToPolar(float x, float y, float *R, float *Theta)
 double pointsRead = 0;
 void loop()
 {
-    // pop all the string messages from the queue.
-    if (!queue.isEmpty()){
-        pointsRead++;
-        gCodeStruct coord = queue.pop();
-        Serial.print("\nPoint: ");
-        Serial.print(pointsRead);
-        Serial.print(", X: ");
-        Serial.print(coord.x);
-        Serial.print(",Y: ");
-        Serial.print(coord.y);
-        Serial.print(", numsPushed: ");
-        Serial.print(numsPushed);
-    }
-    delay(1);
+    // // pop all the string messages from the queue.
+    // if (!queue.isEmpty()){
+    //     pointsRead++;
+    //     gCodeStruct coord = queue.pop();
+    //     Serial.print("\nPoint: ");
+    //     Serial.print(pointsRead);
+    //     Serial.print(", X: ");
+    //     Serial.print(coord.x);
+    //     Serial.print(",Y: ");
+    //     Serial.print(coord.y);
+    //     Serial.print(", numsPushed: ");
+    //     Serial.print(numsPushed);
+    // }
+    // delay(1);
 
     // Serial.println("main loop still running!");
     // state = 17;
@@ -414,17 +414,31 @@ void loop()
             else
             { // if we are ready for the next Major Point
 
-                // Set majorPointIndex to next variable
-                majorPointIndex++;
-                if (majorPointIndex >= majorPointArraySize)
-                {
+                lastMajorX = nextMajorX;
+                lastMajorY = nextMajorY;
+                // Get next Major Point From Queue aka sdCard.
+                if (!queue.isEmpty()){
+                    pointsRead++;
+                    gCodeStruct coord = queue.pop();
+                    nextMajorX = coord.x;
+                    nextMajorY = coord.y;
+                    // Serial.print("\nPoint: ");
+                    // Serial.print(pointsRead);
+                    // Serial.print(", X: ");
+                    // Serial.print(coord.x);
+                    // Serial.print(",Y: ");
+                    // Serial.print(coord.y);
+                    // Serial.print(", numsPushed: ");
+                    // Serial.print(numsPushed);
+                }
+                else{
                     state = 99; //this is nothing
                     break;
                 }
-                lastMajorX = nextMajorX;
-                lastMajorY = nextMajorY;
-                nextMajorX = arrayMajorXs[majorPointIndex];
-                nextMajorY = arrayMajorYs[majorPointIndex];
+                delay(1);
+
+                // Set majorPointIndex to next variable
+                majorPointIndex++;
 
                 // Calculate everything for future minor points till next Major
                 findArrayPointsBetweenPoints(lastMajorX, lastMajorY, nextMajorX, nextMajorY);

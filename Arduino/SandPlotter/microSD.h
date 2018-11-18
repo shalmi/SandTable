@@ -175,7 +175,7 @@ gCodeStruct gCodeToXandY(String gCodeString)
 
     if (gCodeString.startsWith("G01 "))
     {
-        Serial.println(gCodeString);
+        // Serial.println(gCodeString);
         gCodeString.remove(0, 4); // Remove six characters starting at index=2, "G01 "
         char *str = new char[gCodeString.length() + 1];
         strcpy(str, gCodeString.c_str());
@@ -236,12 +236,12 @@ void otherCoreLoop()
     //Runs on Task 0
     for (;;)
     {
-        Serial.println("\nBeginning Of Secondary Loop");
+        // Serial.println("\nBeginning Of Secondary Loop");
         
         for (int i = 0; i < gCodeFilesTotal; i++) // For each gCodeFile
         {
             numsPushed = 0;
-            Serial.println(gCodeFiles[i]); // Print the name of the File
+            // Serial.println(gCodeFiles[i]); // Print the name of the File
             openFile(SD, gCodeFiles[i].c_str()); // converts string to const char* ?
             bool moreToFile = true;
             myFile.seek(0); // Move to begining of file incase we are re reading old Files.
