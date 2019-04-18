@@ -1,3 +1,4 @@
 (sym_lib_table
   (lib (name Sisyphus-cache)(type Legacy)(uri /Users/admin/Dropbox/Coding/SandTable/KiCad/Sisyphus/Sisyphus-cache.lib)(options "")(descr ""))
+  (lib (name Sisyphus-rescue)(type Legacy)(uri ${KIPRJMOD}/Sisyphus-rescue.lib)(options "")(descr ""))
 )

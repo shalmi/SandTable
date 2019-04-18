@@ -1,5 +1,6 @@
 EESchema Schematic File Version 4
-EELAYER 26 0
+LIBS:Sisyphus-cache
+EELAYER 29 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -14,301 +15,258 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L MCU_Microchip_ATmega:ATmega328P-PU U1
-U 1 1 5B70AA86
-P 2100 4200
-F 0 "U1" H 1459 4246 50  0000 R CNN
-F 1 "ATmega328P-PU" H 1459 4155 50  0000 R CNN
-F 2 "Package_DIP:DIP-22_W7.62mm_Socket_LongPads" H 2100 4200 50  0001 C CIN
-F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/ATmega328_P%20AVR%20MCU%20with%20picoPower%20Technology%20Data%20Sheet%2040001984A.pdf" H 2100 4200 50  0001 C CNN
-	1    2100 4200
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	2100 2700 2100 2550
-$Comp
-L power:+5V #PWR0101
-U 1 1 5B70B49E
-P 2100 2400
-F 0 "#PWR0101" H 2100 2250 50  0001 C CNN
-F 1 "+5V" H 2115 2573 50  0000 C CNN
-F 2 "" H 2100 2400 50  0001 C CNN
-F 3 "" H 2100 2400 50  0001 C CNN
-	1    2100 2400
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:Earth #PWR0102
-U 1 1 5B70B543
-P 2100 5850
-F 0 "#PWR0102" H 2100 5600 50  0001 C CNN
-F 1 "Earth" H 2100 5700 50  0001 C CNN
-F 2 "" H 2100 5850 50  0001 C CNN
-F 3 "~" H 2100 5850 50  0001 C CNN
-	1    2100 5850
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:R_US R1
-U 1 1 5B70B68C
-P 3950 1150
-F 0 "R1" V 3745 1150 50  0000 C CNN
-F 1 "10K" V 3836 1150 50  0000 C CNN
-F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 3990 1140 50  0001 C CNN
-F 3 "~" H 3950 1150 50  0001 C CNN
-	1    3950 1150
-	0    1    1    0   
-$EndComp
-$Comp
-L power:+5V #PWR0103
-U 1 1 5B70B6F4
-P 4300 1150
-F 0 "#PWR0103" H 4300 1000 50  0001 C CNN
-F 1 "+5V" V 4315 1278 50  0000 L CNN
-F 2 "" H 4300 1150 50  0001 C CNN
-F 3 "" H 4300 1150 50  0001 C CNN
-	1    4300 1150
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	4300 1150 4100 1150
-Wire Wire Line
-	3800 1150 3500 1150
-Wire Wire Line
-	2100 5700 2100 5850
-$Comp
-L Device:Crystal Y1
-U 1 1 5B70BA5E
-P 1250 1200
-F 0 "Y1" V 1204 1331 50  0000 L CNN
-F 1 "16Mhz" V 1295 1331 50  0000 L CNN
-F 2 "Crystal:Crystal_HC49-4H_Vertical" H 1250 1200 50  0001 C CNN
-F 3 "~" H 1250 1200 50  0001 C CNN
-	1    1250 1200
-	0    1    1    0   
-$EndComp
-$Comp
-L Device:C C1
-U 1 1 5B70BC9B
-P 1300 850
-F 0 "C1" V 1048 850 50  0000 C CNN
-F 1 "22pF" V 1139 850 50  0000 C CNN
-F 2 "Capacitor_SMD:C_0603_1608Metric" H 1338 700 50  0001 C CNN
-F 3 "~" H 1300 850 50  0001 C CNN
-	1    1300 850 
-	0    1    1    0   
-$EndComp
-$Comp
-L Device:C C2
-U 1 1 5B70BD07
-P 1300 1600
-F 0 "C2" V 1048 1600 50  0000 C CNN
-F 1 "22pF" V 1139 1600 50  0000 C CNN
-F 2 "Capacitor_SMD:C_0603_1608Metric" H 1338 1450 50  0001 C CNN
-F 3 "~" H 1300 1600 50  0001 C CNN
-	1    1300 1600
-	0    1    1    0   
-$EndComp
-Text GLabel 2800 3600 2    50   Input ~ 0
-AT_PIN_9
-Text GLabel 2800 3700 2    50   Input ~ 0
-AT_PIN_10
-Text GLabel 950  1050 0    50   Input ~ 0
-AT_PIN_9
-Text GLabel 950  1350 0    50   Input ~ 0
-AT_PIN_10
-Wire Wire Line
-	950  1050 1100 1050
-Wire Wire Line
-	950  1350 1100 1350
-Wire Wire Line
-	1150 1600 1100 1600
-Wire Wire Line
-	1100 1600 1100 1350
-Connection ~ 1100 1350
-Wire Wire Line
-	1100 1350 1250 1350
-Wire Wire Line
-	1150 850  1100 850 
-Wire Wire Line
-	1100 850  1100 1050
-Connection ~ 1100 1050
-Wire Wire Line
-	1100 1050 1250 1050
-$Comp
-L power:Earth #PWR0104
-U 1 1 5B70C1DE
-P 1450 850
-F 0 "#PWR0104" H 1450 600 50  0001 C CNN
-F 1 "Earth" H 1450 700 50  0001 C CNN
-F 2 "" H 1450 850 50  0001 C CNN
-F 3 "~" H 1450 850 50  0001 C CNN
-	1    1450 850 
-	0    -1   -1   0   
-$EndComp
-$Comp
-L power:Earth #PWR0105
-U 1 1 5B70C225
-P 1450 1600
-F 0 "#PWR0105" H 1450 1350 50  0001 C CNN
-F 1 "Earth" H 1450 1450 50  0001 C CNN
-F 2 "" H 1450 1600 50  0001 C CNN
-F 3 "~" H 1450 1600 50  0001 C CNN
-	1    1450 1600
-	0    -1   -1   0   
-$EndComp
-Wire Wire Line
-	2800 3600 2700 3600
-Wire Wire Line
-	2700 3700 2800 3700
-$Comp
-L Switch:SW_Push_SPDT SW1
-U 1 1 5B70C6B6
-P 3300 1250
-F 0 "SW1" H 3300 925 50  0000 C CNN
-F 1 "SW_Push_SPDT" H 3300 1016 50  0000 C CNN
-F 2 "Button_Switch_THT:SW_PUSH_6mm_H5mm" H 3300 1250 50  0001 C CNN
-F 3 "" H 3300 1250 50  0001 C CNN
-	1    3300 1250
-	1    0    0    -1  
-$EndComp
-Text GLabel 2800 4500 2    50   Input ~ 0
-AT_PIN_1_RESET
-Text GLabel 3000 1250 0    50   Input ~ 0
-AT_PIN_1_RESET
-Wire Wire Line
-	3100 1250 3000 1250
-$Comp
-L power:Earth #PWR0106
-U 1 1 5B70CE82
-P 3700 1350
-F 0 "#PWR0106" H 3700 1100 50  0001 C CNN
-F 1 "Earth" H 3700 1200 50  0001 C CNN
-F 2 "" H 3700 1350 50  0001 C CNN
-F 3 "~" H 3700 1350 50  0001 C CNN
-	1    3700 1350
-	0    -1   -1   0   
-$EndComp
-Wire Wire Line
-	3700 1350 3500 1350
-Wire Wire Line
-	2800 4500 2700 4500
-$Comp
-L Connector:AVR-ISP-6 J?
-U 1 1 5B70D651
-P 1350 7000
-F 0 "J?" H 1070 7096 50  0000 R CNN
-F 1 "AVR-ISP-6" H 1070 7005 50  0000 R CNN
-F 2 "" V 1100 7050 50  0001 C CNN
-F 3 " ~" H 75  6450 50  0001 C CNN
-	1    1350 7000
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:Earth #PWR?
-U 1 1 5B70D718
-P 1250 7550
-F 0 "#PWR?" H 1250 7300 50  0001 C CNN
-F 1 "Earth" H 1250 7400 50  0001 C CNN
-F 2 "" H 1250 7550 50  0001 C CNN
-F 3 "~" H 1250 7550 50  0001 C CNN
-	1    1250 7550
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	1250 7400 1250 7550
-Wire Wire Line
-	1250 6500 1250 6200
-$Comp
-L power:+5V #PWR?
-U 1 1 5B70D900
-P 1250 6200
-F 0 "#PWR?" H 1250 6050 50  0001 C CNN
-F 1 "+5V" H 1265 6373 50  0000 C CNN
-F 2 "" H 1250 6200 50  0001 C CNN
-F 3 "" H 1250 6200 50  0001 C CNN
-	1    1250 6200
-	1    0    0    -1  
-$EndComp
-Text GLabel 1900 6800 2    50   Input ~ 0
-AT_PIN_17_MOSI
-Text GLabel 1900 6900 2    50   Input ~ 0
-AT_PIN_18_MISO
-Wire Wire Line
-	1900 6800 1750 6800
-Wire Wire Line
-	1900 6900 1750 6900
-Text GLabel 2800 3300 2    50   Input ~ 0
-AT_PIN_17_MOSI
-Text GLabel 2800 3400 2    50   Input ~ 0
-AT_PIN_18_MISO
-Wire Wire Line
-	2800 3300 2700 3300
-Wire Wire Line
-	2700 3400 2800 3400
-Text GLabel 1900 7000 2    50   Input ~ 0
-AT_PIN_19_SCK
-Wire Wire Line
-	1900 7000 1750 7000
-Text GLabel 1900 7100 2    50   Input ~ 0
-AT_PIN_1_RESET
-Wire Wire Line
-	1900 7100 1750 7100
-Text GLabel 2800 3500 2    50   Input ~ 0
-AT_PIN_19_SCK
-Wire Wire Line
-	2800 3500 2700 3500
-Wire Wire Line
-	2200 2700 2200 2550
-Wire Wire Line
-	2200 2550 2100 2550
-Connection ~ 2100 2550
-Wire Wire Line
-	2100 2550 2100 2400
-Text GLabel 2800 4700 2    50   Input ~ 0
-AT_PIN_2_RX
-Text GLabel 2800 4800 2    50   Input ~ 0
-AT_PIN_3_TX
-Wire Wire Line
-	2800 4700 2700 4700
-Wire Wire Line
-	2800 4800 2700 4800
-Text GLabel 2800 3200 2    50   Input ~ 0
-AT_PIN_16_SS
-Wire Wire Line
-	2800 3200 2700 3200
-Text Notes 3500 3400 0    50   ~ 0
-use these for sd cards and maybe tmc2130s\n
-Text GLabel 2800 4400 2    50   Input ~ 0
-AT_PIN_28_SCL_I2C
-Text GLabel 2800 4300 2    50   Input ~ 0
-AT_PIN_27_SDA_I2C
-Wire Wire Line
-	2800 4300 2700 4300
-Wire Wire Line
-	2800 4400 2700 4400
-$Comp
-L Driver_Motor:TMC2130_Breakout U?
+L Sisyphus-rescue:TMC2130_Breakout-Driver_Motor U3
 U 1 1 5B717E10
 P 8350 2550
-F 0 "U?" H 8350 3115 50  0000 C CNN
+F 0 "U3" H 8350 3115 50  0000 C CNN
 F 1 "TMC2130_Breakout" H 8350 3024 50  0000 C CNN
-F 2 "" H 8350 2000 50  0001 C CNN
+F 2 "Sisyphus:TMC_2130_Footprint" H 8350 2000 50  0001 C CNN
 F 3 "" H 8350 2000 50  0001 C CNN
 	1    8350 2550
 	1    0    0    -1  
 $EndComp
 $Comp
-L Driver_Motor:TMC2130_Breakout U?
+L Sisyphus-rescue:TMC2130_Breakout-Driver_Motor U4
 U 1 1 5B717E73
 P 8350 3750
-F 0 "U?" H 8350 4315 50  0000 C CNN
+F 0 "U4" H 8350 4315 50  0000 C CNN
 F 1 "TMC2130_Breakout" H 8350 4224 50  0000 C CNN
-F 2 "" H 8350 3200 50  0001 C CNN
+F 2 "Sisyphus:TMC_2130_Footprint" H 8350 3200 50  0001 C CNN
 F 3 "" H 8350 3200 50  0001 C CNN
 	1    8350 3750
 	1    0    0    -1  
 $EndComp
-Wire Bus Line
-	6400 2750 6400 3200
+$Comp
+L New_Library:HUZZAH32 U1
+U 1 1 5CB2C35E
+P 4700 1900
+F 0 "U1" H 4725 2865 50  0000 C CNN
+F 1 "HUZZAH32" H 4725 2774 50  0000 C CNN
+F 2 "Sisyphus:Huzzah32_Footprint" H 4700 2750 50  0001 C CNN
+F 3 "" H 4700 2750 50  0001 C CNN
+	1    4700 1900
+	1    0    0    -1  
+$EndComp
+Text GLabel 4150 1300 0    50   Input ~ 0
+3V
+Text GLabel 4150 1500 0    50   Input ~ 0
+GND
+Text GLabel 4150 1900 0    50   Input ~ 0
+A3_39
+Text GLabel 4150 2000 0    50   Input ~ 0
+A4_36
+Text GLabel 4150 2100 0    50   Input ~ 0
+A5_4
+Text GLabel 4150 2200 0    50   Input ~ 0
+SCK_5
+Text GLabel 4150 2300 0    50   Input ~ 0
+MOSI_18
+Text GLabel 4150 2400 0    50   Input ~ 0
+MISO_19
+Text GLabel 4150 2500 0    50   Input ~ 0
+RX_16
+Text GLabel 4150 2600 0    50   Input ~ 0
+TX_17
+Text GLabel 4150 2700 0    50   Input ~ 0
+21
+Text GLabel 5300 1800 2    50   Input ~ 0
+USB_5V
+NoConn ~ 5300 1600
+NoConn ~ 4150 1200
+$Comp
+L New_Library:MicroSD_Card_Adapter U2
+U 1 1 5CB304D5
+P 8200 1500
+F 0 "U2" H 8258 2165 50  0000 C CNN
+F 1 "MicroSD_Card_Adapter" H 8258 2074 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical" H 8200 2050 50  0001 C CNN
+F 3 "" H 8200 2050 50  0001 C CNN
+	1    8200 1500
+	1    0    0    -1  
+$EndComp
+Text GLabel 8450 1100 2    50   Input ~ 0
+A5_4
+Text GLabel 8450 1200 2    50   Input ~ 0
+SCK_5
+Text GLabel 8450 1300 2    50   Input ~ 0
+MOSI_18
+Text GLabel 8450 1400 2    50   Input ~ 0
+MISO_19
+Text GLabel 8450 1500 2    50   Input ~ 0
+USB_5V
+Text GLabel 8450 1600 2    50   Input ~ 0
+GND
+Text GLabel 8000 2350 0    50   Input ~ 0
+3V
+Text GLabel 8000 2250 0    50   Input ~ 0
+GND
+Text GLabel 8000 3550 0    50   Input ~ 0
+3V
+Text GLabel 8000 3450 0    50   Input ~ 0
+GND
+$Comp
+L Device:R R1
+U 1 1 5CB359C5
+P 1600 1400
+F 0 "R1" H 1670 1446 50  0000 L CNN
+F 1 "2K" H 1670 1355 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 1530 1400 50  0001 C CNN
+F 3 "~" H 1600 1400 50  0001 C CNN
+	1    1600 1400
+	0    1    1    0   
+$EndComp
+Text GLabel 1250 1400 0    50   Input ~ 0
+A3_39
+Text GLabel 1250 1950 0    50   Input ~ 0
+A4_36
+$Comp
+L Device:R R2
+U 1 1 5CB35C79
+P 1600 1950
+F 0 "R2" H 1670 1996 50  0000 L CNN
+F 1 "2K" H 1670 1905 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 1530 1950 50  0001 C CNN
+F 3 "~" H 1600 1950 50  0001 C CNN
+	1    1600 1950
+	0    1    1    0   
+$EndComp
+Text GLabel 1750 1400 2    50   Input ~ 0
+GND
+Text GLabel 1750 1950 2    50   Input ~ 0
+GND
+$Comp
+L Connector:Conn_01x07_Male J1
+U 1 1 5CB3D6F7
+P 2400 3750
+F 0 "J1" H 2508 4231 50  0000 C CNN
+F 1 "Conn_01x07_Male" H 2508 4140 50  0000 C CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_1x07_P2.54mm_Vertical" H 2400 3750 50  0001 C CNN
+F 3 "~" H 2400 3750 50  0001 C CNN
+	1    2400 3750
+	1    0    0    -1  
+$EndComp
+Text GLabel 2600 3450 2    50   Input ~ 0
+GND
+Text GLabel 2600 3550 2    50   Input ~ 0
+Inner_Switch
+Text GLabel 2600 3650 2    50   Input ~ 0
+Outer_Switch
+Text GLabel 2600 3750 2    50   Input ~ 0
+Theta_Motor_A
+Text GLabel 2600 3850 2    50   Input ~ 0
+Theta_Motor_B
+Text GLabel 2600 3950 2    50   Input ~ 0
+Theta_Motor_C
+Text GLabel 2600 4050 2    50   Input ~ 0
+Theta_Motor_D
+Text GLabel 8000 2450 0    50   Input ~ 0
+Theta_Motor_A
+Text GLabel 8000 2550 0    50   Input ~ 0
+Theta_Motor_B
+Text GLabel 8000 2650 0    50   Input ~ 0
+Theta_Motor_C
+Text GLabel 8000 2750 0    50   Input ~ 0
+Theta_Motor_D
+$Comp
+L Connector:Conn_01x04_Male J3
+U 1 1 5CB41E93
+P 4300 3650
+F 0 "J3" H 4408 3931 50  0000 C CNN
+F 1 "Conn_01x04_Male" H 4408 3840 50  0000 C CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Vertical" H 4300 3650 50  0001 C CNN
+F 3 "~" H 4300 3650 50  0001 C CNN
+	1    4300 3650
+	1    0    0    -1  
+$EndComp
+Text GLabel 4500 3550 2    50   Input ~ 0
+Radius_Motor_A
+Text GLabel 4500 3650 2    50   Input ~ 0
+Radius_Motor_B
+Text GLabel 4500 3750 2    50   Input ~ 0
+Radius_Motor_C
+Text GLabel 4500 3850 2    50   Input ~ 0
+Radius_Motor_D
+Text GLabel 8000 3650 0    50   Input ~ 0
+Radius_Motor_A
+Text GLabel 8000 3750 0    50   Input ~ 0
+Radius_Motor_B
+Text GLabel 8000 3850 0    50   Input ~ 0
+Radius_Motor_C
+Text GLabel 8000 3950 0    50   Input ~ 0
+Radius_Motor_D
+Text GLabel 8700 2950 2    50   Input ~ 0
+21
+$Comp
+L Connector:Conn_01x02_Male J2
+U 1 1 5CB43B21
+P 3900 4950
+F 0 "J2" H 4008 5131 50  0000 C CNN
+F 1 "Conn_01x02_Male" H 4008 5040 50  0000 C CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_1x07_P2.54mm_Vertical" H 3900 4950 50  0001 C CNN
+F 3 "~" H 3900 4950 50  0001 C CNN
+	1    3900 4950
+	1    0    0    -1  
+$EndComp
+Text GLabel 4100 5050 2    50   Input ~ 0
+GND
+Text GLabel 4100 4950 2    50   Input ~ 0
+High_Motor_Voltage
+Text GLabel 8000 4150 0    50   Input ~ 0
+High_Motor_Voltage
+Text GLabel 8000 2950 0    50   Input ~ 0
+High_Motor_Voltage
+Text GLabel 8000 4050 0    50   Input ~ 0
+GND
+Text GLabel 8000 2850 0    50   Input ~ 0
+GND
+Wire Wire Line
+	1450 1400 1350 1400
+Wire Wire Line
+	1250 1950 1350 1950
+Text GLabel 1450 1200 2    50   Input ~ 0
+Inner_Switch
+Text GLabel 1450 1750 2    50   Input ~ 0
+Outer_Switch
+Wire Wire Line
+	1450 1200 1350 1200
+Wire Wire Line
+	1350 1200 1350 1400
+Connection ~ 1350 1400
+Wire Wire Line
+	1350 1400 1250 1400
+Wire Wire Line
+	1450 1750 1350 1750
+Wire Wire Line
+	1350 1750 1350 1950
+Connection ~ 1350 1950
+Wire Wire Line
+	1350 1950 1450 1950
+Text GLabel 5300 1900 2    50   Input ~ 0
+A12_13_LED
+Text GLabel 5300 2000 2    50   Input ~ 0
+A11_PDR_12
+Text GLabel 5300 2100 2    50   Input ~ 0
+A10_27
+Text GLabel 5300 2200 2    50   Input ~ 0
+A9_33
+Text GLabel 5300 2300 2    50   Input ~ 0
+A8_15
+Text GLabel 5300 2400 2    50   Input ~ 0
+A7_32
+Text GLabel 5300 2500 2    50   Input ~ 0
+A6_14
+Text GLabel 5300 2600 2    50   Input ~ 0
+SCL_22
+Text GLabel 5300 2700 2    50   Input ~ 0
+SDA_23
+Text GLabel 8700 2250 2    50   Input ~ 0
+A10_27
+Text GLabel 8700 2350 2    50   Input ~ 0
+A9_33
+Text GLabel 8700 4150 2    50   Input ~ 0
+A8_15
+Text GLabel 8700 3550 2    50   Input ~ 0
+A7_32
+Text GLabel 8700 3450 2    50   Input ~ 0
+A6_14
 $EndSCHEMATC
